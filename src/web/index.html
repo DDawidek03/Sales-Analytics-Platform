@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GlobalVista - Globalna Korporacja Analityczna</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
+      rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="bg-gray-50 smooth-scroll">
+    
+    <nav class="bg-white shadow-lg fixed w-full z-10" style="border-bottom: 3px solid #F1A263;">
+      <div
+        class="container mx-auto px-4 py-4 flex flex-wrap justify-between items-center">
+        <div class="flex items-center">
+          <i class="fas fa-database text-2xl mr-3" style="color: #4C889E;"></i>
+          <h1 class="text-2xl font-bold" style="color: #4A5D6B;">GlobalVista</h1>
+        </div>
+        <button
+          class="lg:hidden block focus:outline-none"
+          style="color: #6E7F89;"
+          id="mobile-menu-button">
+          <i class="fas fa-bars text-xl"></i>
+        </button>
+        <ul class="lg:flex hidden space-x-2" id="nav-links">
+          <li><a href="#home" class="nav-link" style="color: #6E7F89; font-weight: 500; transition: all 0.3s ease; padding: 0.625rem 1.25rem; border-radius: 0.75rem; border: 2px solid transparent; display: inline-block;" onmouseover="this.style.borderColor='#F1A263'; this.style.backgroundColor='#F9F9F9'; this.style.color='#4A5D6B'" onmouseout="this.style.borderColor='transparent'; this.style.backgroundColor='transparent'; this.style.color='#6E7F89'">Strona Główna</a></li>
+          <li><a href="#about" class="nav-link" style="color: #6E7F89; font-weight: 500; transition: all 0.3s ease; padding: 0.625rem 1.25rem; border-radius: 0.75rem; border: 2px solid transparent; display: inline-block;" onmouseover="this.style.borderColor='#F1A263'; this.style.backgroundColor='#F9F9F9'; this.style.color='#4A5D6B'" onmouseout="this.style.borderColor='transparent'; this.style.backgroundColor='transparent'; this.style.color='#6E7F89'">O Firmie</a></li>
+          <li><a href="#system" class="nav-link" style="color: #6E7F89; font-weight: 500; transition: all 0.3s ease; padding: 0.625rem 1.25rem; border-radius: 0.75rem; border: 2px solid transparent; display: inline-block;" onmouseover="this.style.borderColor='#F1A263'; this.style.backgroundColor='#F9F9F9'; this.style.color='#4A5D6B'" onmouseout="this.style.borderColor='transparent'; this.style.backgroundColor='transparent'; this.style.color='#6E7F89'">System Analityczny</a></li>
+          <li><a href="#data" class="nav-link" style="color: #6E7F89; font-weight: 500; transition: all 0.3s ease; padding: 0.625rem 1.25rem; border-radius: 0.75rem; border: 2px solid transparent; display: inline-block;" onmouseover="this.style.borderColor='#F1A263'; this.style.backgroundColor='#F9F9F9'; this.style.color='#4A5D6B'" onmouseout="this.style.borderColor='transparent'; this.style.backgroundColor='transparent'; this.style.color='#6E7F89'">Wprowadzanie Danych</a></li>
+          <li>
+            <a href="dashboard.html" class="nav-link-primary" style="background-color: #4C889E; color: white; padding: 0.625rem 1.5rem; border-radius: 0.75rem; font-weight: 600; border: 2px solid #4C889E; transition: all 0.3s ease; display: inline-flex; align-items: center;" onmouseover="this.style.backgroundColor='#506E80'; this.style.borderColor='#506E80'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 8px rgba(76, 136, 158, 0.3)'" onmouseout="this.style.backgroundColor='#4C889E'; this.style.borderColor='#4C889E'; this.style.transform='translateY(0)'; this.style.boxShadow='none'"
+              ><i class="fas fa-tachometer-alt mr-2"></i>Panel Zarządzania</a
+            >
+          </li>
+          <li><a href="#contact" class="nav-link" style="color: #6E7F89; font-weight: 500; transition: all 0.3s ease; padding: 0.625rem 1.25rem; border-radius: 0.75rem; border: 2px solid transparent; display: inline-block;" onmouseover="this.style.borderColor='#F1A263'; this.style.backgroundColor='#F9F9F9'; this.style.color='#4A5D6B'" onmouseout="this.style.borderColor='transparent'; this.style.backgroundColor='transparent'; this.style.color='#6E7F89'">Kontakt</a></li>
+        </ul>
+      </div>
+      <div class="lg:hidden hidden w-full pb-4 px-4 bg-white" id="mobile-menu" style="border-top: 1px solid #F1D4C4;">
+        <ul class="space-y-2">
+          <li><a href="#home" class="nav-link block py-2 px-4 rounded-lg" style="color: #6E7F89; font-weight: 500; transition: all 0.3s ease; border: 2px solid transparent;" onmouseover="this.style.borderColor='#F1A263'; this.style.backgroundColor='#F9F9F9'; this.style.color='#4A5D6B'" onmouseout="this.style.borderColor='transparent'; this.style.backgroundColor='transparent'; this.style.color='#6E7F89'">Strona Główna</a></li>
+          <li><a href="#about" class="nav-link block py-2 px-4 rounded-lg" style="color: #6E7F89; font-weight: 500; transition: all 0.3s ease; border: 2px solid transparent;" onmouseover="this.style.borderColor='#F1A263'; this.style.backgroundColor='#F9F9F9'; this.style.color='#4A5D6B'" onmouseout="this.style.borderColor='transparent'; this.style.backgroundColor='transparent'; this.style.color='#6E7F89'">O Firmie</a></li>
+          <li>
+            <a href="#system" class="nav-link block py-2 px-4 rounded-lg" style="color: #6E7F89; font-weight: 500; transition: all 0.3s ease; border: 2px solid transparent;" onmouseover="this.style.borderColor='#F1A263'; this.style.backgroundColor='#F9F9F9'; this.style.color='#4A5D6B'" onmouseout="this.style.borderColor='transparent'; this.style.backgroundColor='transparent'; this.style.color='#6E7F89'">System Analityczny</a>
+          </li>
+          <li>
+            <a href="#data" class="nav-link block py-2 px-4 rounded-lg" style="color: #6E7F89; font-weight: 500; transition: all 0.3s ease; border: 2px solid transparent;" onmouseover="this.style.borderColor='#F1A263'; this.style.backgroundColor='#F9F9F9'; this.style.color='#4A5D6B'" onmouseout="this.style.borderColor='transparent'; this.style.backgroundColor='transparent'; this.style.color='#6E7F89'">Wprowadzanie Danych</a>
+          </li>
+          <li>
+            <a href="dashboard.html" class="nav-link-primary block py-2 px-4 rounded-lg" style="background-color: #4C889E; color: white; font-weight: 600; border: 2px solid #4C889E;"
+              ><i class="fas fa-tachometer-alt mr-2"></i>Panel Zarządzania</a
+            >
+          </li>
+          <li><a href="#contact" class="nav-link block py-2 px-4 rounded-lg" style="color: #6E7F89; font-weight: 500; transition: all 0.3s ease; border: 2px solid transparent;" onmouseover="this.style.borderColor='#F1A263'; this.style.backgroundColor='#F9F9F9'; this.style.color='#4A5D6B'" onmouseout="this.style.borderColor='transparent'; this.style.backgroundColor='transparent'; this.style.color='#6E7F89'">Kontakt</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    
+    <section
+      id="home"
+      class="hero-bg text-white min-h-screen flex items-center">
+      <div class="container mx-auto px-4 py-20 text-center">
+        <div class="animated-fade-in">
+          <h2
+            class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+            GlobalVista: Nowoczesna <br />Analityka Biznesowa
+          </h2>
+          <p class="text-xl mb-12 max-w-3xl mx-auto">
+            Kompleksowy system do zarządzania sprzedażą i danymi bankowymi,
+            oparty na MS SQL Server, MongoDB, Azure i Power BI.
+          </p>
+          <div class="flex flex-col md:flex-row justify-center gap-4">
+            <a href="#system" class="btn-primary animated-btn"
+              ><i class="fas fa-chart-line mr-2"></i>Poznaj System</a
+            >
+            <a href="dashboard.html" class="btn-secondary animated-btn"
+              ><i class="fas fa-database mr-2"></i>Zarządzaj Danymi</a
+            >
+          </div>
+        </div>
+        <div class="mt-16 animated-bounce">
+          <a
+            href="#about"
+            class="text-white text-opacity-80 hover:text-opacity-100 transition">
+            <i class="fas fa-chevron-down text-2xl"></i>
+            <span class="sr-only">Przewiń w dół</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    
+    <section id="about" class="py-20 section-bg">
+      <div class="container mx-auto px-4">
+        <div class="text-center mb-16 section-header">
+          <h2 class="text-3xl font-semibold mb-2" style="color: #4A5D6B;">
+            O Globalnej Korporacji
+          </h2>
+          <div class="w-24 h-1 mx-auto" style="background-color: #F1A263;"></div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-bullseye"></i>
+            </div>
+            <h3 class="text-xl font-medium mb-4" style="color: #506E80;">Nasza Misja</h3>
+            <p style="color: #6E7F89;">
+              Ułatwiamy firmom zarządzanie danymi sprzedażowymi i bankowymi
+              dzięki prostym, nowoczesnym i bezpiecznym narzędziom analitycznym.
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-award"></i>
+            </div>
+            <h3 class="text-xl font-medium mb-4" style="color: #506E80;">
+              Doświadczenie
+            </h3>
+            <p style="color: #6E7F89;">
+              Od 10 lat wspieramy globalne firmy w analizie danych e-commerce i
+              finansowych, dostarczając kompleksowe rozwiązania.
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-cogs"></i>
+            </div>
+            <h3 class="text-xl font-medium mb-4" style="color: #506E80;">Technologie</h3>
+            <p style="color: #6E7F89;">
+              MS SQL Server, MongoDB, Azure, Python i Power BI dla precyzyjnej
+              analizy i optymalizacji procesów biznesowych.
+            </p>
+          </div>
+        </div>
+        <div class="mt-16 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div>
+            <h3 class="text-2xl font-semibold mb-6" style="color: #4A5D6B;">
+              Globalna obecność
+            </h3>
+            <p class="mb-4" style="color: #6E7F89;">
+              Działamy na 6 kontynentach, wspierając firmy różnej wielkości w
+              transformacji cyfrowej i analityce danych.
+            </p>
+            <p class="text-gray-600 mb-6">
+              Nasze rozwiązania są dostosowane do specyfiki lokalnych rynków
+              oraz wymogów prawnych i regulacyjnych poszczególnych krajów.
+            </p>
+            <ul class="space-y-2">
+              <li class="flex items-start">
+                <i class="fas fa-check-circle text-blue-600 mt-1 mr-3"></i>
+                <span class="text-gray-700"
+                  >Ponad 500 klientów korporacyjnych na całym świecie</span
+                >
+              </li>
+              <li class="flex items-start">
+                <i class="fas fa-check-circle text-blue-600 mt-1 mr-3"></i>
+                <span class="text-gray-700"
+                  >Przetwarzanie ponad miliarda transakcji rocznie</span
+                >
+              </li>
+              <li class="flex items-start">
+                <i class="fas fa-check-circle text-blue-600 mt-1 mr-3"></i>
+                <span class="text-gray-700">Zespół ekspertów w 15 krajach</span>
+              </li>
+            </ul>
+          </div>
+          <div class="bg-white p-8 rounded-lg shadow-xl">
+            <div class="flex items-center mb-8">
+              <div class="rounded-full p-3 mr-4" style="background-color: #F1D4C4;">
+                <i class="fas fa-chart-bar text-xl" style="color: #506E80;"></i>
+              </div>
+              <div>
+                <h4 class="text-lg font-medium" style="color: #4A5D6B;">
+                  Wymierne rezultaty
+                </h4>
+                <p class="text-sm" style="color: #6E7F89;">
+                  Zwiększona efektywność operacyjna
+                </p>
+              </div>
+            </div>
+            <div class="space-y-6">
+              <div class="space-y-2">
+                <div class="flex justify-between">
+                  <span class="text-sm font-medium text-gray-600"
+                    >Optymalizacja kosztów</span
+                  >
+                  <span class="text-sm font-medium text-gray-800">85%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div
+                    class="h-2 rounded-full"
+                    style="width: 85%; background-color: #4C889E;"></div>
+                </div>
+              </div>
+              <div class="space-y-2">
+                <div class="flex justify-between">
+                  <span class="text-sm font-medium text-gray-600"
+                    >Szybkość analizy danych</span
+                  >
+                  <span class="text-sm font-medium text-gray-800">92%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div
+                    class="h-2 rounded-full"
+                    style="width: 92%; background-color: #4C889E;"></div>
+                </div>
+              </div>
+              <div class="space-y-2">
+                <div class="flex justify-between">
+                  <span class="text-sm font-medium text-gray-600"
+                    >Dokładność prognoz</span
+                  >
+                  <span class="text-sm font-medium text-gray-800">78%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div
+                    class="h-2 rounded-full"
+                    style="width: 78%; background-color: #4C889E;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    <section id="system" class="py-20 bg-white">
+      <div class="container mx-auto px-4">
+        <div class="text-center mb-16 section-header">
+          <h2 class="text-3xl font-semibold mb-2" style="color: #4A5D6B;">
+            Co oferuje GlobalVista?
+          </h2>
+          <div class="w-24 h-1 mx-auto" style="background-color: #F1A263;"></div>
+          <p class="mt-4 max-w-3xl mx-auto" style="color: #6E7F89;">
+            Kompleksowe rozwiązanie do zarządzania i analizy danych
+            sprzedażowych i bankowych dla firm każdej wielkości.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div class="feature-card-alt">
+            <div class="p-2 rounded-full inline-block" style="background-color: rgba(76, 136, 158, 0.15);">
+              <i class="fas fa-shopping-cart text-2xl p-2" style="color: #4C889E;"></i>
+            </div>
+            <h3 class="text-lg font-medium mt-4 mb-2" style="color: #506E80;">
+              Zarządzanie Sprzedażą
+            </h3>
+            <p style="color: #6E7F89;">
+              Łatwe wprowadzanie i monitorowanie zamówień, produktów i klientów
+              w intuicyjnym interfejsie.
+            </p>
+            <ul class="mt-4 space-y-1">
+              <li class="text-sm flex items-center" style="color: #6E7F89;">
+                <i class="fas fa-check mr-2" style="color: #4C889E;"></i>Śledzenie
+                statusu zamówień
+              </li>
+              <li class="text-sm flex items-center" style="color: #6E7F89;">
+                <i class="fas fa-check mr-2" style="color: #4C889E;"></i>Zarządzanie
+                produktami
+              </li>
+              <li class="text-sm flex items-center" style="color: #6E7F89;">
+                <i class="fas fa-check mr-2" style="color: #4C889E;"></i>Analiza trendów
+                sprzedażowych
+              </li>
+            </ul>
+          </div>
+
+          <div class="feature-card-alt">
+            <div class="p-2 rounded-full inline-block" style="background-color: rgba(241, 162, 99, 0.15);">
+              <i class="fas fa-university text-2xl p-2" style="color: #F1A263;"></i>
+            </div>
+            <h3 class="text-lg font-medium mt-4 mb-2" style="color: #506E80;">
+              Analiza Bankowa
+            </h3>
+            <p style="color: #6E7F89;">
+              Śledzenie transakcji, zarządzanie kontami i analiza przepływów
+              finansowych.
+            </p>
+            <ul class="mt-4 space-y-1">
+              <li class="text-sm flex items-center" style="color: #6E7F89;">
+                <i class="fas fa-check mr-2" style="color: #F1A263;"></i>Monitorowanie
+                transakcji
+              </li>
+              <li class="text-sm text-gray-600 flex items-center">
+                <i class="fas fa-check text-green-500 mr-2"></i>Zarządzanie
+                kontami
+              </li>
+              <li class="text-sm text-gray-600 flex items-center">
+                <i class="fas fa-check text-green-500 mr-2"></i>Wykrywanie
+                anomalii
+              </li>
+            </ul>
+          </div>
+
+          <div class="feature-card-alt">
+            <div class="p-2 rounded-full inline-block" style="background-color: rgba(76, 136, 158, 0.15);">
+              <i class="fas fa-globe text-2xl p-2" style="color: #4C889E;"></i>
+            </div>
+            <h3 class="text-lg font-medium mt-4 mb-2" style="color: #506E80;">
+              Dane Geograficzne
+            </h3>
+            <p style="color: #6E7F89;">
+              Organizacja i analiza danych o krajach i regionach dla globalnych
+              operacji biznesowych.
+            </p>
+            <ul class="mt-4 space-y-1">
+              <li class="text-sm flex items-center" style="color: #6E7F89;">
+                <i class="fas fa-check mr-2" style="color: #4C889E;"></i>Wizualizacje
+                geograficzne
+              </li>
+              <li class="text-sm text-gray-600 flex items-center">
+                <i class="fas fa-check text-green-500 mr-2"></i>Segmentacja
+                regionalna
+              </li>
+              <li class="text-sm text-gray-600 flex items-center">
+                <i class="fas fa-check text-green-500 mr-2"></i>Analiza rynków
+                lokalnych
+              </li>
+            </ul>
+          </div>
+
+          <div class="feature-card-alt">
+            <div class="p-2 rounded-full inline-block" style="background-color: rgba(241, 162, 99, 0.15);">
+              <i class="fas fa-chart-pie text-2xl p-2" style="color: #F1A263;"></i>
+            </div>
+            <h3 class="text-lg font-medium mt-4 mb-2" style="color: #506E80;">
+              Wizualizacja Danych
+            </h3>
+            <p style="color: #6E7F89;">
+              Interaktywne dashboardy i raporty w Power BI dla podejmowania
+              strategicznych decyzji.
+            </p>
+            <ul class="mt-4 space-y-1">
+              <li class="text-sm flex items-center" style="color: #6E7F89;">
+                <i class="fas fa-check mr-2" style="color: #F1A263;"></i>Dashboardy w
+                czasie rzeczywistym
+              </li>
+              <li class="text-sm text-gray-600 flex items-center">
+                <i class="fas fa-check text-green-500 mr-2"></i>Raporty
+                niestandardowe
+              </li>
+              <li class="text-sm text-gray-600 flex items-center">
+                <i class="fas fa-check text-green-500 mr-2"></i>Alerty i
+                powiadomienia
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="mt-20 rounded-xl p-8 shadow-lg" style="background-color: #F9F9F9;">
+          <div class="flex flex-col lg:flex-row items-center">
+            <div class="lg:w-2/3 lg:pr-12 mb-8 lg:mb-0">
+              <h3 class="text-2xl font-semibold mb-4" style="color: #4A5D6B;">
+                Architektura systemu
+              </h3>
+              <p class="text-gray-600 mb-6">
+                SalesDB wykorzystuje hybrydową architekturę baz danych, łącząc
+                zalety systemów relacyjnych (MS SQL Server) i nierelacyjnych
+                (MongoDB) oraz integrację z chmurą Azure.
+              </p>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-white p-4 rounded-lg shadow">
+                  <h4 class="font-medium mb-2" style="color: #506E80;">MS SQL Server</h4>
+                  <p class="text-sm" style="color: #6E7F89;">
+                    Dane strukturalne, transakcje, relacje
+                  </p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow">
+                  <h4 class="font-medium text-gray-700 mb-2">MongoDB</h4>
+                  <p class="text-sm text-gray-600">
+                    Elastyczne dane, historie, logi
+                  </p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow">
+                  <h4 class="font-medium text-gray-700 mb-2">Azure</h4>
+                  <p class="text-sm text-gray-600">
+                    Skalowalność, bezpieczeństwo
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="lg:w-1/3 flex justify-center">
+              <div class="relative">
+                <div
+                  class="w-64 h-64 rounded-full flex items-center justify-center" style="background-color: #F1D4C4;">
+                  <i class="fas fa-database text-6xl" style="color: #4C889E;"></i>
+                </div>
+                <div
+                  class="absolute -top-4 -right-4 w-20 h-20 rounded-full flex items-center justify-center" style="background-color: rgba(76, 136, 158, 0.15);">
+                  <i class="fas fa-server text-2xl" style="color: #4C889E;"></i>
+                </div>
+                <div
+                  class="absolute -bottom-4 -left-4 w-20 h-20 rounded-full flex items-center justify-center" style="background-color: rgba(241, 162, 99, 0.15);">
+                  <i class="fas fa-cloud text-2xl" style="color: #F1A263;"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    <section id="data" class="py-20 section-bg">
+      <div class="container mx-auto px-4">
+        <div class="text-center mb-16 section-header">
+          <h2 class="text-3xl font-semibold mb-2" style="color: #4A5D6B;">
+            Wprowadzanie Danych
+          </h2>
+          <div class="w-24 h-1 mx-auto" style="background-color: #F1A263;"></div>
+          <p class="mt-4 max-w-3xl mx-auto" style="color: #6E7F89;">
+            Intuicyjny interfejs do zarządzania danymi we wszystkich modułach
+            systemu analitycznego.
+          </p>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-lg p-8 max-w-5xl mx-auto">
+          <div class="text-center mb-8">
+            <p class="mb-6" style="color: #6E7F89;">
+              SalesDB oferuje kompleksowe rozwiązania do wprowadzania, edycji i
+              analizy danych w różnych modułach systemu. Wybierz odpowiedni
+              moduł, aby rozpocząć pracę.
+            </p>
+            <a href="dashboard.html" class="btn-primary-large">
+              <i class="fas fa-tachometer-alt mr-2"></i>
+              Przejdź do Pełnego Panelu Zarządzania
+            </a>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+            <div class="data-card">
+              <div class="data-card-icon">
+                <i class="fas fa-database"></i>
+              </div>
+              <h3 class="text-lg font-medium mb-3" style="color: #506E80;">SQL Server</h3>
+              <p class="mb-4" style="color: #6E7F89;">
+                Wprowadzanie danych strukturalnych do bazy relacyjnej.
+              </p>
+              <ul class="text-sm text-gray-600 space-y-2 mb-4">
+                <li class="flex items-center">
+                  <i class="fas fa-table text-blue-500 mr-2"></i>
+                  Transakcje sprzedażowe
+                </li>
+                <li class="flex items-center">
+                  <i class="fas fa-table text-blue-500 mr-2"></i>
+                  Dane bankowe
+                </li>
+                <li class="flex items-center">
+                  <i class="fas fa-table text-blue-500 mr-2"></i>
+                  Informacje geograficzne
+                </li>
+              </ul>
+              <a href="dashboard.html#sql-sales" class="data-card-link">
+                <span>Zarządzaj danymi SQL</span>
+                <i class="fas fa-arrow-right"></i>
+              </a>
+            </div>
+
+            <div class="data-card">
+              <div class="data-card-icon">
+                <i class="fas fa-leaf"></i>
+              </div>
+              <h3 class="text-lg font-medium mb-3" style="color: #506E80;">MongoDB</h3>
+              <p class="mb-4" style="color: #6E7F89;">
+                Zarządzanie danymi elastycznymi w kolekcjach NoSQL.
+              </p>
+              <ul class="text-sm text-gray-600 space-y-2 mb-4">
+                <li class="flex items-center">
+                  <i class="fas fa-file-alt text-green-500 mr-2"></i>
+                  Historie zakupów klientów
+                </li>
+                <li class="flex items-center">
+                  <i class="fas fa-file-alt text-green-500 mr-2"></i>
+                  Logi transakcji bankowych
+                </li>
+                <li class="flex items-center">
+                  <i class="fas fa-file-alt text-green-500 mr-2"></i>
+                  Dane behawioralne
+                </li>
+              </ul>
+              <a href="dashboard.html#mongo-purchase" class="data-card-link">
+                <span>Zarządzaj danymi MongoDB</span>
+                <i class="fas fa-arrow-right"></i>
+              </a>
+            </div>
+
+            <div class="data-card">
+              <div class="data-card-icon">
+                <i class="fas fa-cloud"></i>
+              </div>
+              <h3 class="text-lg font-medium mb-3" style="color: #506E80;">Azure</h3>
+              <p class="mb-4" style="color: #6E7F89;">
+                Integracja z usługami chmurowymi i przepływami danych.
+              </p>
+              <ul class="text-sm text-gray-600 space-y-2 mb-4">
+                <li class="flex items-center">
+                  <i class="fas fa-hdd text-indigo-500 mr-2"></i>
+                  Azure Storage
+                </li>
+                <li class="flex items-center">
+                  <i class="fas fa-cogs text-indigo-500 mr-2"></i>
+                  Data Factory
+                </li>
+                <li class="flex items-center">
+                  <i class="fas fa-sync text-indigo-500 mr-2"></i>
+                  Synchronizacja danych
+                </li>
+              </ul>
+              <a href="dashboard.html#azure-storage" class="data-card-link">
+                <span>Zarządzaj danymi Azure</span>
+                <i class="fas fa-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="py-20 text-white" style="background-color: #4A5D6B;">
+      <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl font-semibold mb-2">
+            Technologie, które wykorzystujemy
+          </h2>
+          <div class="w-24 h-1 mx-auto" style="background-color: #F1A263;"></div>
+        </div>
+
+        <div
+          class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 text-center">
+          <div class="tech-icon">
+            <i class="fas fa-database"></i>
+            <span>SQL Server</span>
+          </div>
+          <div class="tech-icon">
+            <i class="fas fa-leaf"></i>
+            <span>MongoDB</span>
+          </div>
+          <div class="tech-icon">
+            <i class="fas fa-cloud"></i>
+            <span>Azure</span>
+          </div>
+          <div class="tech-icon">
+            <i class="fas fa-chart-line"></i>
+            <span>Power BI</span>
+          </div>
+          <div class="tech-icon">
+            <i class="fab fa-python"></i>
+            <span>Python</span>
+          </div>
+          <div class="tech-icon">
+            <i class="fas fa-cogs"></i>
+            <span>Data Factory</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    <section
+      id="contact"
+      class="py-20 text-white" style="background: linear-gradient(to bottom, #506E80, #4A5D6B);">
+      <div class="container mx-auto px-4 text-center">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl font-semibold mb-2">Skontaktuj się z Nami</h2>
+          <div class="w-24 h-1 mx-auto" style="background-color: #F1A263;"></div>
+          <p class="text-lg mt-4 mb-8 max-w-xl mx-auto text-gray-300">
+            Masz pytania o GlobalVista lub chcesz dowiedzieć się więcej? Napisz
+            do nas, a nasz zespół skontaktuje się z Tobą.
+          </p>
+        </div>
+
+        <div class="max-w-md mx-auto p-8 rounded-lg shadow-lg" style="background-color: rgba(74, 93, 107, 0.8);">
+          <form class="space-y-4">
+            <div>
+              <label for="name" class="sr-only">Imię i Nazwisko</label>
+              <div class="relative">
+                <div
+                  class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i class="fas fa-user text-gray-500"></i>
+                </div>
+                <input
+                  id="name"
+                  type="text"
+                  placeholder="Imię i Nazwisko"
+                  class="contact-input pl-10" />
+              </div>
+            </div>
+
+            <div>
+              <label for="email" class="sr-only">Adres E-mail</label>
+              <div class="relative">
+                <div
+                  class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i class="fas fa-envelope text-gray-500"></i>
+                </div>
+                <input
+                  id="email"
+                  type="email"
+                  placeholder="Adres E-mail"
+                  class="contact-input pl-10" />
+              </div>
+            </div>
+
+            <div>
+              <label for="message" class="sr-only">Twoja wiadomość</label>
+              <div class="relative">
+                <div class="absolute top-3 left-0 pl-3 pointer-events-none">
+                  <i class="fas fa-comment text-gray-500"></i>
+                </div>
+                <textarea
+                  id="message"
+                  placeholder="Twoja wiadomość"
+                  class="contact-input pl-10"
+                  rows="5"></textarea>
+              </div>
+            </div>
+
+            <button type="submit" class="w-full btn-primary-large">
+              <i class="fas fa-paper-plane mr-2"></i>
+              Wyślij Wiadomość
+            </button>
+          </form>
+        </div>
+
+        <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="contact-info">
+            <i class="fas fa-map-marker-alt contact-icon"></i>
+            <h3 class="text-lg font-medium text-gray-200 mb-2">Lokalizacja</h3>
+            <p class="text-gray-400">
+              ul. Przykładowa 123<br />00-001 Warszawa, Polska
+            </p>
+          </div>
+
+          <div class="contact-info">
+            <i class="fas fa-phone-alt contact-icon"></i>
+            <h3 class="text-lg font-medium text-gray-200 mb-2">Telefon</h3>
+            <p class="text-gray-400">+48 123 456 789<br />+48 987 654 321</p>
+          </div>
+
+          <div class="contact-info">
+            <i class="fas fa-envelope contact-icon"></i>
+            <h3 class="text-lg font-medium text-gray-200 mb-2">Email</h3>
+            <p class="text-gray-400">
+              kontakt@salesdb.example.com<br />wsparcie@salesdb.example.com
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    <footer class="py-12" style="background-color: #4A5D6B; color: #F1D4C4;">
+      <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+          <div>
+            <h3 class="text-white text-lg font-semibold mb-4">GlobalVista</h3>
+            <p class="mb-4">
+              Globalny system analityczny dla firm zarządzających e-commerce i
+              bankowością.
+            </p>
+            <div class="flex space-x-4">
+              <a href="#" class="text-gray-400 hover:text-white transition">
+                <i class="fab fa-facebook-f"></i>
+              </a>
+              <a href="#" class="text-gray-400 hover:text-white transition">
+                <i class="fab fa-twitter"></i>
+              </a>
+              <a href="#" class="text-gray-400 hover:text-white transition">
+                <i class="fab fa-linkedin-in"></i>
+              </a>
+              <a href="#" class="text-gray-400 hover:text-white transition">
+                <i class="fab fa-github"></i>
+              </a>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="text-white text-lg font-semibold mb-4">Szybkie Linki</h3>
+            <ul class="space-y-2">
+              <li>
+                <a href="#home" class="hover:text-white transition"
+                  >Strona Główna</a
+                >
+              </li>
+              <li>
+                <a href="#about" class="hover:text-white transition"
+                  >O Firmie</a
+                >
+              </li>
+              <li>
+                <a href="#system" class="hover:text-white transition"
+                  >System Analityczny</a
+                >
+              </li>
+              <li>
+                <a href="#data" class="hover:text-white transition"
+                  >Wprowadzanie Danych</a
+                >
+              </li>
+              <li>
+                <a href="#contact" class="hover:text-white transition"
+                  >Kontakt</a
+                >
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 class="text-white text-lg font-semibold mb-4">
+              Moduły Systemu
+            </h3>
+            <ul class="space-y-2">
+              <li>
+                <a
+                  href="dashboard.html#sql-sales"
+                  class="hover:text-white transition"
+                  >Moduł Sprzedażowy</a
+                >
+              </li>
+              <li>
+                <a
+                  href="dashboard.html#sql-banking"
+                  class="hover:text-white transition"
+                  >Moduł Bankowy</a
+                >
+              </li>
+              <li>
+                <a
+                  href="dashboard.html#sql-geo"
+                  class="hover:text-white transition"
+                  >Moduł Geograficzny</a
+                >
+              </li>
+              <li>
+                <a
+                  href="dashboard.html#mongo-purchase"
+                  class="hover:text-white transition"
+                  >Historie Zakupów</a
+                >
+              </li>
+              <li>
+                <a
+                  href="dashboard.html#azure-storage"
+                  class="hover:text-white transition"
+                  >Integracja Azure</a
+                >
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 class="text-white text-lg font-semibold mb-4">Newsletter</h3>
+            <p class="mb-4">
+              Zapisz się, aby otrzymywać aktualizacje i nowości.
+            </p>
+            <form class="flex">
+              <input
+                type="email"
+                placeholder="Twój email"
+                class="bg-gray-800 text-white px-4 py-2 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-700 flex-1" />
+              <button
+                type="submit"
+                class="text-white px-4 py-2 rounded-r-lg transition"
+                style="background: linear-gradient(135deg, #4C889E, #506E80);">
+                <i class="fas fa-paper-plane"></i>
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <div
+          class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
+          <p>© 2025 Globalna Korporacja. Wszystkie prawa zastrzeżone.</p>
+          <p class="mt-2 md:mt-0">
+            Powered by MS SQL Server, MongoDB, Azure, Python, and Power BI
+          </p>
+          <p class="text-sm mt-2 md:mt-0">Autor: Damian Dawidek</p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // Mobile menu toggle
+      document
+        .getElementById("mobile-menu-button")
+        .addEventListener("click", function () {
+          document.getElementById("mobile-menu").classList.toggle("hidden");
+        });
+
+      // Smooth scrolling for anchor links
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          e.preventDefault();
+
+          // Close mobile menu if open
+          document.getElementById("mobile-menu").classList.add("hidden");
+
+          // Scroll to target
+          document.querySelector(this.getAttribute("href")).scrollIntoView({
+            behavior: "smooth",
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

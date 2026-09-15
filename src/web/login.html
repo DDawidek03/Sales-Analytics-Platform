@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logowanie - GlobalVista</title>
+    <link href="tailwind.css" rel="stylesheet">
+    <link href="login.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="toast-container" id="toastContainer"></div>
+    
+    <div class="login-container">
+        <div class="login-header">
+            <div class="logo-circle">
+                <i class="fas fa-shield-alt text-white text-3xl"></i>
+            </div>
+            
+            <div class="welcome-text">
+                <h1>Witaj w<br>GlobalVista</h1>
+                <p>System zarządzania bazami danych SQL i NoSQL w chmurze Azure</p>
+            </div>
+            
+            <div class="feature-list">
+                <div class="feature-item">
+                    <i class="fas fa-database"></i>
+                    <span>Azure SQL & Cosmos DB</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard analityczny</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Bezpieczne logowanie</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="login-body">
+            <div style="display: flex; gap: 10px; margin-bottom: 25px; border-radius: 12px; background: #f0f4f8; padding: 6px;">
+                <button id="switchToLogin" class="switch-btn active" onclick="switchMode('login')" style="flex: 1; padding: 12px; border: none; background: white; color: var(--primary); font-weight: 600; border-radius: 8px; cursor: pointer; transition: all 0.3s; box-shadow: 0 2px 8px rgba(76, 136, 158, 0.2);">
+                    <i class="fas fa-sign-in-alt"></i> Logowanie
+                </button>
+                <button id="switchToRegister" class="switch-btn" onclick="switchMode('register')" style="flex: 1; padding: 12px; border: none; background: transparent; color: #6b7280; font-weight: 600; border-radius: 8px; cursor: pointer; transition: all 0.3s;">
+                    <i class="fas fa-user-plus"></i> Rejestracja
+                </button>
+            </div>
+
+            <div id="loginPanel">
+                <h2 class="login-title">Zaloguj się</h2>
+                <p class="login-subtitle">Wpisz swoje dane logowania aby kontynuować</p>
+                
+                <div id="alertBox" class="alert"></div>
+                
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label class="form-label" for="username">
+                            Nazwa użytkownika
+                        </label>
+                        <div class="input-icon">
+                            <input 
+                                type="text" 
+                                id="username" 
+                                name="username" 
+                                class="form-input" 
+                                placeholder="admin"
+                                required
+                                autocomplete="username"
+                            >
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="password">
+                            Hasło
+                        </label>
+                        <div class="input-icon">
+                            <input 
+                                type="password" 
+                                id="password" 
+                                name="password" 
+                                class="form-input" 
+                                placeholder="••••••••"
+                                required
+                                autocomplete="current-password"
+                            >
+                            <i class="fas fa-lock"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="remember" name="remember">
+                        <label for="remember">Zapamiętaj mnie na tym urządzeniu</label>
+                    </div>
+                    
+                    <button type="submit" id="loginBtn" class="btn-login">
+                        <i class="fas fa-sign-in-alt"></i> Zaloguj się
+                    </button>
+                </form>
+            </div>
+
+            <div id="registerPanel" style="display: none;">
+                <h2 class="login-title">Utwórz konto</h2>
+                <p class="login-subtitle">Wybierz typ konta, które chcesz utworzyć</p>
+                
+                <div id="alertBoxRegister" class="alert"></div>
+
+                <div style="display: flex; gap: 12px; margin-bottom: 20px;">
+                    <button id="btnUserType" class="account-type-btn active" onclick="selectAccountType('user')" style="flex: 1; padding: 14px; border: 2px solid var(--primary); background: var(--primary); color: white; font-weight: 600; border-radius: 10px; cursor: pointer; transition: all 0.3s;">
+                        <i class="fas fa-user" style="font-size: 20px; display: block; margin-bottom: 6px;"></i>
+                        <span style="font-size: 13px;">Zwykły Użytkownik</span>
+                    </button>
+                    <button id="btnAdminType" class="account-type-btn" onclick="selectAccountType('admin')" style="flex: 1; padding: 14px; border: 2px solid #e5e7eb; background: white; color: #6b7280; font-weight: 600; border-radius: 10px; cursor: pointer; transition: all 0.3s;">
+                        <i class="fas fa-user-shield" style="font-size: 20px; display: block; margin-bottom: 6px;"></i>
+                        <span style="font-size: 13px;">Administrator</span>
+                    </button>
+                </div>
+                
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label class="form-label" for="regUsername">
+                            Nazwa użytkownika <span style="color: #ef4444;">*</span>
+                        </label>
+                        <div class="input-icon">
+                            <input 
+                                type="text" 
+                                id="regUsername" 
+                                class="form-input" 
+                                placeholder="min. 3 znaki"
+                                required
+                                minlength="3"
+                            >
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="regEmail">
+                            Email (opcjonalnie)
+                        </label>
+                        <div class="input-icon">
+                            <input 
+                                type="email" 
+                                id="regEmail" 
+                                class="form-input" 
+                                placeholder="twoj@email.com"
+                            >
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div id="emailValidation" style="margin-top: 8px; font-size: 12px; display: none;"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="regPassword">
+                            Hasło <span style="color: #ef4444;">*</span>
+                        </label>
+                        <div class="input-icon">
+                            <input 
+                                type="password" 
+                                id="regPassword" 
+                                class="form-input" 
+                                placeholder="min. 8 znaków"
+                                required
+                                minlength="8"
+                            >
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <div id="passwordStrength" style="margin-top: 8px; display: none;">
+                            <div style="display: flex; gap: 4px; height: 4px; margin-bottom: 8px;">
+                                <div id="strengthBar1" class="strength-bar"></div>
+                                <div id="strengthBar2" class="strength-bar"></div>
+                                <div id="strengthBar3" class="strength-bar"></div>
+                                <div id="strengthBar4" class="strength-bar"></div>
+                            </div>
+                            <p id="strengthText" style="font-size: 12px; color: #6b7280;"></p>
+                        </div>
+                        <div id="passwordRequirements" style="margin-top: 8px; font-size: 12px; display: none;">
+                            <div id="req-length" style="color: #9ca3af; margin-bottom: 4px;">
+                                <i class="fas fa-circle" style="font-size: 6px;"></i> Min. 8 znaków
+                            </div>
+                            <div id="req-uppercase" style="color: #9ca3af; margin-bottom: 4px;">
+                                <i class="fas fa-circle" style="font-size: 6px;"></i> Wielka litera
+                            </div>
+                            <div id="req-lowercase" style="color: #9ca3af; margin-bottom: 4px;">
+                                <i class="fas fa-circle" style="font-size: 6px;"></i> Mała litera
+                            </div>
+                            <div id="req-number" style="color: #9ca3af; margin-bottom: 4px;">
+                                <i class="fas fa-circle" style="font-size: 6px;"></i> Cyfra
+                            </div>
+                            <div id="req-special" style="color: #9ca3af;">
+                                <i class="fas fa-circle" style="font-size: 6px;"></i> Znak specjalny (!@#$%^&*)
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="regPasswordConfirm">
+                            Potwierdź hasło <span style="color: #ef4444;">*</span>
+                        </label>
+                        <div class="input-icon">
+                            <input 
+                                type="password" 
+                                id="regPasswordConfirm" 
+                                class="form-input" 
+                                placeholder="Powtórz hasło"
+                                required
+                            >
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <div id="passwordMatch" style="margin-top: 8px; font-size: 12px; display: none;"></div>
+                    </div>
+
+                    <div id="adminVerification" style="display: none; border: 2px solid #fbbf24; background: #fef3c7; border-radius: 10px; padding: 14px; margin-bottom: 16px;">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px; color: #92400e;">
+                            <i class="fas fa-shield-alt" style="font-size: 18px;"></i>
+                            <strong style="font-size: 14px;">Weryfikacja uprawnień administratora</strong>
+                        </div>
+                        <p style="font-size: 12px; color: #78350f; margin-bottom: 14px;">Aby utworzyć konto administratora, podaj dane logowania istniejącego administratora:</p>
+                        
+                        <div class="form-group" style="margin-bottom: 10px; max-width: 300px;">
+                            <label class="form-label" for="adminUsername" style="font-size: 13px; margin-bottom: 6px;">
+                                Login administratora
+                            </label>
+                            <div class="input-icon">
+                                <input 
+                                    type="text" 
+                                    id="adminUsername" 
+                                    class="form-input" 
+                                    placeholder="Nazwa użytkownika admina"
+                                    style="padding: 12px 15px 12px 45px; font-size: 14px;"
+                                >
+                                <i class="fas fa-user-shield"></i>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 0; max-width: 300px;">
+                            <label class="form-label" for="adminPassword" style="font-size: 13px; margin-bottom: 6px;">
+                                Hasło administratora
+                            </label>
+                            <div class="input-icon">
+                                <input 
+                                    type="password" 
+                                    id="adminPassword" 
+                                    class="form-input" 
+                                    placeholder="Hasło admina"
+                                    style="padding: 12px 15px 12px 45px; font-size: 14px;"
+                                >
+                                <i class="fas fa-key"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" id="registerBtn" class="btn-login">
+                        <i class="fas fa-user-plus"></i> Utwórz konto
+                    </button>
+                </form>
+            </div>
+            
+            <div class="footer-links">
+                <a href="index.html">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Powrót do strony głównej</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showToast(type, title, message, duration = 5000) {
+            const container = document.getElementById('toastContainer');
+            
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            const iconMap = {
+                success: 'fa-check-circle',
+                error: 'fa-exclamation-circle'
+            };
+            
+            toast.innerHTML = `
+                <div class="toast-icon">
+                    <i class="fas ${iconMap[type]}"></i>
+                </div>
+                <div class="toast-content">
+                    <div class="toast-title">${title}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+                <div class="toast-close" onclick="closeToast(this)">
+                    <i class="fas fa-times"></i>
+                </div>
+            `;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                closeToast(toast.querySelector('.toast-close'));
+            }, duration);
+        }
+        
+        function closeToast(closeBtn) {
+            const toast = closeBtn.closest('.toast');
+            toast.classList.add('hiding');
+            setTimeout(() => toast.remove(), 300);
+        }
+        
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const loginBtn = document.getElementById('loginBtn');
+        const registerBtn = document.getElementById('registerBtn');
+        const alertBox = document.getElementById('alertBox');
+        const alertBoxRegister = document.getElementById('alertBoxRegister');
+        
+        let selectedAccountType = 'user';
+        
+        function checkPasswordStrength(password) {
+            let strength = 0;
+            const requirements = {
+                length: password.length >= 8,
+                uppercase: /[A-Z]/.test(password),
+                lowercase: /[a-z]/.test(password),
+                number: /[0-9]/.test(password),
+                special: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)
+            };
+            
+            if (requirements.length) strength++;
+            if (requirements.uppercase) strength++;
+            if (requirements.lowercase) strength++;
+            if (requirements.number) strength++;
+            if (requirements.special) strength++;
+            
+            return { strength, requirements };
+        }
+        
+        function updatePasswordStrengthUI(password) {
+            const strengthDiv = document.getElementById('passwordStrength');
+            const requirementsDiv = document.getElementById('passwordRequirements');
+            const strengthText = document.getElementById('strengthText');
+            const bars = [
+                document.getElementById('strengthBar1'),
+                document.getElementById('strengthBar2'),
+                document.getElementById('strengthBar3'),
+                document.getElementById('strengthBar4')
+            ];
+            
+            if (!password) {
+                strengthDiv.style.display = 'none';
+                requirementsDiv.style.display = 'none';
+                return;
+            }
+            
+            strengthDiv.style.display = 'block';
+            requirementsDiv.style.display = 'block';
+            
+            const { strength, requirements } = checkPasswordStrength(password);
+            
+            document.getElementById('req-length').style.color = requirements.length ? '#10b981' : '#9ca3af';
+            document.getElementById('req-length').innerHTML = `<i class="fas ${requirements.length ? 'fa-check-circle' : 'fa-circle'}" style="font-size: ${requirements.length ? '12px' : '6px'};"></i> Min. 8 znaków`;
+            
+            document.getElementById('req-uppercase').style.color = requirements.uppercase ? '#10b981' : '#9ca3af';
+            document.getElementById('req-uppercase').innerHTML = `<i class="fas ${requirements.uppercase ? 'fa-check-circle' : 'fa-circle'}" style="font-size: ${requirements.uppercase ? '12px' : '6px'};"></i> Wielka litera`;
+            
+            document.getElementById('req-lowercase').style.color = requirements.lowercase ? '#10b981' : '#9ca3af';
+            document.getElementById('req-lowercase').innerHTML = `<i class="fas ${requirements.lowercase ? 'fa-check-circle' : 'fa-circle'}" style="font-size: ${requirements.lowercase ? '12px' : '6px'};"></i> Mała litera`;
+            
+            document.getElementById('req-number').style.color = requirements.number ? '#10b981' : '#9ca3af';
+            document.getElementById('req-number').innerHTML = `<i class="fas ${requirements.number ? 'fa-check-circle' : 'fa-circle'}" style="font-size: ${requirements.number ? '12px' : '6px'};"></i> Cyfra`;
+            
+            document.getElementById('req-special').style.color = requirements.special ? '#10b981' : '#9ca3af';
+            document.getElementById('req-special').innerHTML = `<i class="fas ${requirements.special ? 'fa-check-circle' : 'fa-circle'}" style="font-size: ${requirements.special ? '12px' : '6px'};"></i> Znak specjalny (!@#$%^&*)`;
+            
+            bars.forEach(bar => {
+                bar.className = 'strength-bar';
+            });
+            
+            if (strength >= 1) {
+                bars[0].classList.add('weak');
+                strengthText.textContent = 'Słabe hasło';
+                strengthText.style.color = '#ef4444';
+            }
+            if (strength >= 2) {
+                bars[1].classList.add('weak');
+            }
+            if (strength >= 3) {
+                bars[0].classList.remove('weak');
+                bars[0].classList.add('medium');
+                bars[1].classList.remove('weak');
+                bars[1].classList.add('medium');
+                bars[2].classList.add('medium');
+                strengthText.textContent = 'Średnie hasło';
+                strengthText.style.color = '#f59e0b';
+            }
+            if (strength >= 4) {
+                bars[0].classList.remove('medium');
+                bars[0].classList.add('good');
+                bars[1].classList.remove('medium');
+                bars[1].classList.add('good');
+                bars[2].classList.remove('medium');
+                bars[2].classList.add('good');
+                bars[3].classList.add('good');
+                strengthText.textContent = 'Dobre hasło';
+                strengthText.style.color = '#10b981';
+            }
+            if (strength === 5) {
+                bars.forEach(bar => {
+                    bar.classList.remove('good');
+                    bar.classList.add('strong');
+                });
+                strengthText.textContent = 'Bardzo silne hasło!';
+                strengthText.style.color = '#059669';
+            }
+        }
+        
+        function validateEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+        
+        function checkPasswordMatch() {
+            const password = document.getElementById('regPassword').value;
+            const passwordConfirm = document.getElementById('regPasswordConfirm').value;
+            const matchDiv = document.getElementById('passwordMatch');
+            
+            if (!passwordConfirm) {
+                matchDiv.style.display = 'none';
+                return;
+            }
+            
+            matchDiv.style.display = 'block';
+            
+            if (password === passwordConfirm) {
+                matchDiv.innerHTML = '<i class="fas fa-check-circle" style="color: #10b981;"></i> <span style="color: #10b981;">Hasła są zgodne</span>';
+            } else {
+                matchDiv.innerHTML = '<i class="fas fa-times-circle" style="color: #ef4444;"></i> <span style="color: #ef4444;">Hasła nie są zgodne</span>';
+            }
+        }
+        
+        document.getElementById('regPassword').addEventListener('input', function() {
+            updatePasswordStrengthUI(this.value);
+            if (document.getElementById('regPasswordConfirm').value) {
+                checkPasswordMatch();
+            }
+        });
+        
+        document.getElementById('regPasswordConfirm').addEventListener('input', function() {
+            checkPasswordMatch();
+        });
+        
+        document.getElementById('regEmail').addEventListener('blur', function() {
+            const email = this.value.trim();
+            const validationDiv = document.getElementById('emailValidation');
+            
+            if (!email) {
+                validationDiv.style.display = 'none';
+                return;
+            }
+            
+            validationDiv.style.display = 'block';
+            
+            if (validateEmail(email)) {
+                validationDiv.innerHTML = '<i class="fas fa-check-circle" style="color: #10b981;"></i> <span style="color: #10b981;">Email poprawny</span>';
+            } else {
+                validationDiv.innerHTML = '<i class="fas fa-times-circle" style="color: #ef4444;"></i> <span style="color: #ef4444;">Nieprawidłowy format email</span>';
+            }
+        });
+        
+        function showAlert(message, type = 'error', boxId = 'alertBox') {
+            const box = document.getElementById(boxId);
+            box.innerHTML = `<i class="fas fa-${type === 'error' ? 'exclamation-circle' : 'check-circle'}"></i> ${message}`;
+            box.className = `alert alert-${type}`;
+            box.style.display = 'block';
+            
+            setTimeout(() => {
+                box.style.display = 'none';
+            }, 5000);
+        }
+        
+        function setLoading(button, loading, originalText, loadingText) {
+            button.disabled = loading;
+            if (loading) {
+                button.innerHTML = `<span class="loading-spinner"></span> ${loadingText}`;
+            } else {
+                button.innerHTML = originalText;
+            }
+        }
+        
+        function switchMode(mode) {
+            const loginPanel = document.getElementById('loginPanel');
+            const registerPanel = document.getElementById('registerPanel');
+            const switchToLogin = document.getElementById('switchToLogin');
+            const switchToRegister = document.getElementById('switchToRegister');
+            
+            if (mode === 'login') {
+                loginPanel.style.display = 'block';
+                registerPanel.style.display = 'none';
+                switchToLogin.classList.add('active');
+                switchToRegister.classList.remove('active');
+                switchToLogin.style.background = 'white';
+                switchToLogin.style.color = 'var(--primary)';
+                switchToLogin.style.boxShadow = '0 2px 8px rgba(76, 136, 158, 0.2)';
+                switchToRegister.style.background = 'transparent';
+                switchToRegister.style.color = '#6b7280';
+                switchToRegister.style.boxShadow = 'none';
+            } else {
+                loginPanel.style.display = 'none';
+                registerPanel.style.display = 'block';
+                switchToLogin.classList.remove('active');
+                switchToRegister.classList.add('active');
+                switchToRegister.style.background = 'white';
+                switchToRegister.style.color = 'var(--primary)';
+                switchToRegister.style.boxShadow = '0 2px 8px rgba(76, 136, 158, 0.2)';
+                switchToLogin.style.background = 'transparent';
+                switchToLogin.style.color = '#6b7280';
+                switchToLogin.style.boxShadow = 'none';
+            }
+        }
+        
+        function selectAccountType(type) {
+            selectedAccountType = type;
+            const btnUser = document.getElementById('btnUserType');
+            const btnAdmin = document.getElementById('btnAdminType');
+            const adminVerification = document.getElementById('adminVerification');
+            
+            if (type === 'user') {
+                btnUser.style.border = '2px solid var(--primary)';
+                btnUser.style.background = 'var(--primary)';
+                btnUser.style.color = 'white';
+                btnUser.classList.add('active');
+                
+                btnAdmin.style.border = '2px solid #e5e7eb';
+                btnAdmin.style.background = 'white';
+                btnAdmin.style.color = '#6b7280';
+                btnAdmin.classList.remove('active');
+                
+                adminVerification.style.display = 'none';
+                document.getElementById('adminUsername').removeAttribute('required');
+                document.getElementById('adminPassword').removeAttribute('required');
+            } else {
+                btnAdmin.style.border = '2px solid #dc2626';
+                btnAdmin.style.background = '#dc2626';
+                btnAdmin.style.color = 'white';
+                btnAdmin.classList.add('active');
+                
+                btnUser.style.border = '2px solid #e5e7eb';
+                btnUser.style.background = 'white';
+                btnUser.style.color = '#6b7280';
+                btnUser.classList.remove('active');
+                
+                adminVerification.style.display = 'block';
+                document.getElementById('adminUsername').setAttribute('required', 'required');
+                document.getElementById('adminPassword').setAttribute('required', 'required');
+            }
+        }
+        
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const remember = document.getElementById('remember').checked;
+            
+            if (!username || !password) {
+                showAlert('Proszę wypełnić wszystkie pola', 'error');
+                return;
+            }
+            
+            setLoading(loginBtn, true, '<i class="fas fa-sign-in-alt"></i> Zaloguj się', 'Logowanie...');
+            
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        password: password,
+                        remember: remember
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    showAlert('Logowanie pomyślne! Przekierowywanie...', 'success');
+                    showToast('success', 'Witaj!', `Pomyślnie zalogowano jako ${username}`);
+                    
+                    setTimeout(() => {
+                        // Przekieruj w zależności od roli
+                        if (data.user.role === 'admin') {
+                            window.location.href = '/admin.html';
+                        } else {
+                            window.location.href = '/dashboard.html';
+                        }
+                    }, 1000);
+                } else {
+                    showAlert(data.message || 'Nieprawidłowe dane logowania', 'error');
+                    showToast('error', 'Błąd logowania', data.message || 'Nieprawidłowe dane logowania');
+                    setLoading(loginBtn, false, '<i class="fas fa-sign-in-alt"></i> Zaloguj się', 'Logowanie...');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showAlert('Błąd połączenia z serwerem', 'error');
+                setLoading(loginBtn, false, '<i class="fas fa-sign-in-alt"></i> Zaloguj się', 'Logowanie...');
+            }
+        });
+        
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('regUsername').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const passwordConfirm = document.getElementById('regPasswordConfirm').value;
+            
+            if (username.length < 3) {
+                showAlert('Nazwa użytkownika musi mieć co najmniej 3 znaki', 'error', 'alertBoxRegister');
+                return;
+            }
+            
+            if (password.length < 8) {
+                showAlert('Hasło musi mieć co najmniej 8 znaków', 'error', 'alertBoxRegister');
+                return;
+            }
+            
+            const { strength, requirements } = checkPasswordStrength(password);
+            if (!requirements.length) {
+                showAlert('Hasło musi mieć co najmniej 8 znaków', 'error', 'alertBoxRegister');
+                return;
+            }
+            if (!requirements.uppercase) {
+                showAlert('Hasło musi zawierać co najmniej jedną wielką literę', 'error', 'alertBoxRegister');
+                return;
+            }
+            if (!requirements.lowercase) {
+                showAlert('Hasło musi zawierać co najmniej jedną małą literę', 'error', 'alertBoxRegister');
+                return;
+            }
+            if (!requirements.number) {
+                showAlert('Hasło musi zawierać co najmniej jedną cyfrę', 'error', 'alertBoxRegister');
+                return;
+            }
+            if (!requirements.special) {
+                showAlert('Hasło musi zawierać co najmniej jeden znak specjalny (!@#$%^&*)', 'error', 'alertBoxRegister');
+                return;
+            }
+            
+            if (password !== passwordConfirm) {
+                showAlert('Hasła nie są identyczne!', 'error', 'alertBoxRegister');
+                return;
+            }
+            
+            if (email && !validateEmail(email)) {
+                showAlert('Podaj prawidłowy adres email lub pozostaw pole puste', 'error', 'alertBoxRegister');
+                return;
+            }
+            
+            if (selectedAccountType === 'admin') {
+                const adminUser = document.getElementById('adminUsername').value.trim();
+                const adminPass = document.getElementById('adminPassword').value;
+                
+                if (!adminUser || !adminPass) {
+                    showAlert('Podaj login i hasło istniejącego administratora', 'error', 'alertBoxRegister');
+                    return;
+                }
+            }
+            
+            setLoading(registerBtn, true, '<i class="fas fa-user-plus"></i> Utwórz konto', 'Tworzenie konta...');
+            
+            try {
+                const endpoint = selectedAccountType === 'admin' 
+                    ? '/api/auth/register-admin' 
+                    : '/api/auth/register';
+                
+                const payload = {
+                    username: username,
+                    password: password,
+                    email: email || null
+                };
+                
+                if (selectedAccountType === 'admin') {
+                    payload.admin_username = document.getElementById('adminUsername').value.trim();
+                    payload.admin_password = document.getElementById('adminPassword').value;
+                }
+                
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    showAlert(`Konto utworzone! Możesz się teraz zalogować.`, 'success', 'alertBoxRegister');
+                    showToast('success', 'Konto utworzone!', `Użytkownik ${username} został pomyślnie zarejestrowany`);
+                    
+                    setTimeout(() => {
+                        // Przełącz na panel logowania i wypełnij nazwę użytkownika
+                        switchMode('login');
+                        document.getElementById('username').value = username;
+                        document.getElementById('password').focus();
+                        
+                        // Wyczyść formularz rejestracji
+                        registerForm.reset();
+                        selectAccountType('user');
+                    }, 2000);
+                } else {
+                    showAlert(data.message || 'Błąd podczas tworzenia konta', 'error', 'alertBoxRegister');
+                    showToast('error', 'Błąd rejestracji', data.message || 'Nie udało się utworzyć konta');
+                    setLoading(registerBtn, false, '<i class="fas fa-user-plus"></i> Utwórz konto', 'Tworzenie konta...');
+                }
+            } catch (error) {
+                console.error('Register error:', error);
+                showAlert('Błąd połączenia z serwerem', 'error', 'alertBoxRegister');
+                setLoading(registerBtn, false, '<i class="fas fa-user-plus"></i> Utwórz konto', 'Tworzenie konta...');
+            }
+        });
+        
+        document.getElementById('username').focus();
+        
+        document.getElementById('username').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                document.getElementById('password').focus();
+            }
+        });
+    </script>
+</body>
+</html>

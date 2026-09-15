@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_5" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="Process_WebInterface" name="Przepływ Użytkownika - Interfejs Webowy" isExecutable="false">
+    <bpmn:startEvent id="StartEvent_Web" name="Użytkownik wchodzi na stronę">
+      <bpmn:outgoing>Flow_W1</bpmn:outgoing>
+    </bpmn:startEvent>
+    
+    <bpmn:task id="Task_LoadHomePage" name="Załadowanie strony głównej (index.html)">
+      <bpmn:incoming>Flow_W1</bpmn:incoming>
+      <bpmn:outgoing>Flow_W2</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:exclusiveGateway id="Gateway_UserChoice" name="Wybór użytkownika">
+      <bpmn:incoming>Flow_W2</bpmn:incoming>
+      <bpmn:outgoing>Flow_Admin</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Dashboard</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    
+    <bpmn:userTask id="Task_OpenAdmin" name="Przejście do panelu administracyjnego">
+      <bpmn:incoming>Flow_Admin</bpmn:incoming>
+      <bpmn:outgoing>Flow_W3</bpmn:outgoing>
+    </bpmn:userTask>
+    
+    <bpmn:task id="Task_LoadAdmin" name="Załadowanie admin.html">
+      <bpmn:incoming>Flow_W3</bpmn:incoming>
+      <bpmn:outgoing>Flow_W4</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:exclusiveGateway id="Gateway_AdminAction" name="Akcja administratora">
+      <bpmn:incoming>Flow_W4</bpmn:incoming>
+      <bpmn:outgoing>Flow_GenSQL</bpmn:outgoing>
+      <bpmn:outgoing>Flow_GenNoSQL</bpmn:outgoing>
+      <bpmn:outgoing>Flow_LoadDB</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Check</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    
+    <bpmn:task id="Task_GenerateSQLData" name="Wywołanie API /api/admin/generate-sql">
+      <bpmn:incoming>Flow_GenSQL</bpmn:incoming>
+      <bpmn:outgoing>Flow_W5</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:task id="Task_GenerateNoSQLData" name="Wywołanie API /api/admin/generate-mongo">
+      <bpmn:incoming>Flow_GenNoSQL</bpmn:incoming>
+      <bpmn:outgoing>Flow_W6</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:task id="Task_LoadToDatabase" name="Wywołanie API /api/admin/load-to-db">
+      <bpmn:incoming>Flow_LoadDB</bpmn:incoming>
+      <bpmn:outgoing>Flow_W7</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:task id="Task_CheckDatabase" name="Wywołanie API /api/admin/check-db">
+      <bpmn:incoming>Flow_Check</bpmn:incoming>
+      <bpmn:outgoing>Flow_W8</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:task id="Task_StreamProgress" name="Strumieniowanie postępu w czasie rzeczywistym">
+      <bpmn:incoming>Flow_W5</bpmn:incoming>
+      <bpmn:incoming>Flow_W6</bpmn:incoming>
+      <bpmn:incoming>Flow_W7</bpmn:incoming>
+      <bpmn:outgoing>Flow_W9</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:task id="Task_UpdateUI" name="Aktualizacja interfejsu (pasek postępu, logi)">
+      <bpmn:incoming>Flow_W9</bpmn:incoming>
+      <bpmn:incoming>Flow_W8</bpmn:incoming>
+      <bpmn:outgoing>Flow_W10</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:task id="Task_DisplayResult" name="Wyświetlenie wyniku operacji">
+      <bpmn:incoming>Flow_W10</bpmn:incoming>
+      <bpmn:outgoing>Flow_W11</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:exclusiveGateway id="Gateway_ContinueAdmin">
+      <bpmn:incoming>Flow_W11</bpmn:incoming>
+      <bpmn:outgoing>Flow_BackAdmin</bpmn:outgoing>
+      <bpmn:outgoing>Flow_ToMain</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    
+    <bpmn:userTask id="Task_OpenDashboard" name="Przejście do dashboardu">
+      <bpmn:incoming>Flow_Dashboard</bpmn:incoming>
+      <bpmn:incoming>Flow_ToMain</bpmn:incoming>
+      <bpmn:outgoing>Flow_W12</bpmn:outgoing>
+    </bpmn:userTask>
+    
+    <bpmn:task id="Task_LoadDashboard" name="Załadowanie dashboard.html">
+      <bpmn:incoming>Flow_W12</bpmn:incoming>
+      <bpmn:outgoing>Flow_W13</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:task id="Task_FetchData" name="Wywołanie API /api/dashboard/data">
+      <bpmn:incoming>Flow_W13</bpmn:incoming>
+      <bpmn:outgoing>Flow_W14</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:task id="Task_RenderCharts" name="Renderowanie wykresów i wizualizacji">
+      <bpmn:incoming>Flow_W14</bpmn:incoming>
+      <bpmn:outgoing>Flow_W15</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:userTask id="Task_InteractDashboard" name="Interakcja z dashboardem (filtry, drill-down)">
+      <bpmn:incoming>Flow_W15</bpmn:incoming>
+      <bpmn:outgoing>Flow_W16</bpmn:outgoing>
+    </bpmn:userTask>
+    
+    <bpmn:endEvent id="EndEvent_Web" name="Zakończenie sesji">
+      <bpmn:incoming>Flow_W16</bpmn:incoming>
+    </bpmn:endEvent>
+    
+    <bpmn:sequenceFlow id="Flow_W1" sourceRef="StartEvent_Web" targetRef="Task_LoadHomePage" />
+    <bpmn:sequenceFlow id="Flow_W2" sourceRef="Task_LoadHomePage" targetRef="Gateway_UserChoice" />
+    <bpmn:sequenceFlow id="Flow_Admin" name="Admin" sourceRef="Gateway_UserChoice" targetRef="Task_OpenAdmin" />
+    <bpmn:sequenceFlow id="Flow_Dashboard" name="Dashboard" sourceRef="Gateway_UserChoice" targetRef="Task_OpenDashboard" />
+    <bpmn:sequenceFlow id="Flow_W3" sourceRef="Task_OpenAdmin" targetRef="Task_LoadAdmin" />
+    <bpmn:sequenceFlow id="Flow_W4" sourceRef="Task_LoadAdmin" targetRef="Gateway_AdminAction" />
+    <bpmn:sequenceFlow id="Flow_GenSQL" name="Generuj SQL" sourceRef="Gateway_AdminAction" targetRef="Task_GenerateSQLData" />
+    <bpmn:sequenceFlow id="Flow_GenNoSQL" name="Generuj NoSQL" sourceRef="Gateway_AdminAction" targetRef="Task_GenerateNoSQLData" />
+    <bpmn:sequenceFlow id="Flow_LoadDB" name="Załaduj DB" sourceRef="Gateway_AdminAction" targetRef="Task_LoadToDatabase" />
+    <bpmn:sequenceFlow id="Flow_Check" name="Sprawdź DB" sourceRef="Gateway_AdminAction" targetRef="Task_CheckDatabase" />
+    <bpmn:sequenceFlow id="Flow_W5" sourceRef="Task_GenerateSQLData" targetRef="Task_StreamProgress" />
+    <bpmn:sequenceFlow id="Flow_W6" sourceRef="Task_GenerateNoSQLData" targetRef="Task_StreamProgress" />
+    <bpmn:sequenceFlow id="Flow_W7" sourceRef="Task_LoadToDatabase" targetRef="Task_StreamProgress" />
+    <bpmn:sequenceFlow id="Flow_W8" sourceRef="Task_CheckDatabase" targetRef="Task_UpdateUI" />
+    <bpmn:sequenceFlow id="Flow_W9" sourceRef="Task_StreamProgress" targetRef="Task_UpdateUI" />
+    <bpmn:sequenceFlow id="Flow_W10" sourceRef="Task_UpdateUI" targetRef="Task_DisplayResult" />
+    <bpmn:sequenceFlow id="Flow_W11" sourceRef="Task_DisplayResult" targetRef="Gateway_ContinueAdmin" />
+    <bpmn:sequenceFlow id="Flow_BackAdmin" name="Pozostań w Admin" sourceRef="Gateway_ContinueAdmin" targetRef="Gateway_AdminAction" />
+    <bpmn:sequenceFlow id="Flow_ToMain" name="Przejdź do Dashboard" sourceRef="Gateway_ContinueAdmin" targetRef="Task_OpenDashboard" />
+    <bpmn:sequenceFlow id="Flow_W12" sourceRef="Task_OpenDashboard" targetRef="Task_LoadDashboard" />
+    <bpmn:sequenceFlow id="Flow_W13" sourceRef="Task_LoadDashboard" targetRef="Task_FetchData" />
+    <bpmn:sequenceFlow id="Flow_W14" sourceRef="Task_FetchData" targetRef="Task_RenderCharts" />
+    <bpmn:sequenceFlow id="Flow_W15" sourceRef="Task_RenderCharts" targetRef="Task_InteractDashboard" />
+    <bpmn:sequenceFlow id="Flow_W16" sourceRef="Task_InteractDashboard" targetRef="EndEvent_Web" />
+  </bpmn:process>
+  
+  <bpmndi:BPMNDiagram id="BPMNDiagram_5">
+    <bpmndi:BPMNPlane id="BPMNPlane_5" bpmnElement="Process_WebInterface">
+      <bpmndi:BPMNShape id="StartEvent_Web_di" bpmnElement="StartEvent_Web">
+        <dc:Bounds x="152" y="202" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_LoadHomePage_di" bpmnElement="Task_LoadHomePage">
+        <dc:Bounds x="240" y="180" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_UserChoice_di" bpmnElement="Gateway_UserChoice" isMarkerVisible="true">
+        <dc:Bounds x="390" y="195" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_OpenAdmin_di" bpmnElement="Task_OpenAdmin">
+        <dc:Bounds x="490" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_LoadAdmin_di" bpmnElement="Task_LoadAdmin">
+        <dc:Bounds x="640" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_AdminAction_di" bpmnElement="Gateway_AdminAction" isMarkerVisible="true">
+        <dc:Bounds x="790" y="95" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_GenerateSQLData_di" bpmnElement="Task_GenerateSQLData">
+        <dc:Bounds x="890" y="20" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_GenerateNoSQLData_di" bpmnElement="Task_GenerateNoSQLData">
+        <dc:Bounds x="890" y="120" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_LoadToDatabase_di" bpmnElement="Task_LoadToDatabase">
+        <dc:Bounds x="890" y="220" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_CheckDatabase_di" bpmnElement="Task_CheckDatabase">
+        <dc:Bounds x="890" y="320" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_StreamProgress_di" bpmnElement="Task_StreamProgress">
+        <dc:Bounds x="1040" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_UpdateUI_di" bpmnElement="Task_UpdateUI">
+        <dc:Bounds x="1190" y="180" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_DisplayResult_di" bpmnElement="Task_DisplayResult">
+        <dc:Bounds x="1340" y="180" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_ContinueAdmin_di" bpmnElement="Gateway_ContinueAdmin" isMarkerVisible="true">
+        <dc:Bounds x="1490" y="195" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_OpenDashboard_di" bpmnElement="Task_OpenDashboard">
+        <dc:Bounds x="490" y="300" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_LoadDashboard_di" bpmnElement="Task_LoadDashboard">
+        <dc:Bounds x="640" y="300" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_FetchData_di" bpmnElement="Task_FetchData">
+        <dc:Bounds x="790" y="300" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_RenderCharts_di" bpmnElement="Task_RenderCharts">
+        <dc:Bounds x="940" y="300" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_InteractDashboard_di" bpmnElement="Task_InteractDashboard">
+        <dc:Bounds x="1090" y="300" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_Web_di" bpmnElement="EndEvent_Web">
+        <dc:Bounds x="1240" y="322" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      
+      <bpmndi:BPMNEdge id="Flow_W1_di" bpmnElement="Flow_W1">
+        <di:waypoint x="188" y="220" />
+        <di:waypoint x="240" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_W2_di" bpmnElement="Flow_W2">
+        <di:waypoint x="340" y="220" />
+        <di:waypoint x="390" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Admin_di" bpmnElement="Flow_Admin">
+        <di:waypoint x="415" y="195" />
+        <di:waypoint x="415" y="120" />
+        <di:waypoint x="490" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Dashboard_di" bpmnElement="Flow_Dashboard">
+        <di:waypoint x="415" y="245" />
+        <di:waypoint x="415" y="340" />
+        <di:waypoint x="490" y="340" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_W3_di" bpmnElement="Flow_W3">
+        <di:waypoint x="590" y="120" />
+        <di:waypoint x="640" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_W4_di" bpmnElement="Flow_W4">
+        <di:waypoint x="740" y="120" />
+        <di:waypoint x="790" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_GenSQL_di" bpmnElement="Flow_GenSQL">
+        <di:waypoint x="815" y="95" />
+        <di:waypoint x="815" y="60" />
+        <di:waypoint x="890" y="60" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_GenNoSQL_di" bpmnElement="Flow_GenNoSQL">
+        <di:waypoint x="840" y="120" />
+        <di:waypoint x="865" y="120" />
+        <di:waypoint x="865" y="160" />
+        <di:waypoint x="890" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_LoadDB_di" bpmnElement="Flow_LoadDB">
+        <di:waypoint x="815" y="145" />
+        <di:waypoint x="815" y="260" />
+        <di:waypoint x="890" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Check_di" bpmnElement="Flow_Check">
+        <di:waypoint x="815" y="145" />
+        <di:waypoint x="815" y="360" />
+        <di:waypoint x="890" y="360" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_W5_di" bpmnElement="Flow_W5">
+        <di:waypoint x="990" y="60" />
+        <di:waypoint x="1015" y="60" />
+        <di:waypoint x="1015" y="120" />
+        <di:waypoint x="1040" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_W6_di" bpmnElement="Flow_W6">
+        <di:waypoint x="990" y="160" />
+        <di:waypoint x="1015" y="160" />
+        <di:waypoint x="1015" y="120" />
+        <di:waypoint x="1040" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_W7_di" bpmnElement="Flow_W7">
+        <di:waypoint x="990" y="260" />
+        <di:waypoint x="1015" y="260" />
+        <di:waypoint x="1015" y="120" />
+        <di:waypoint x="1040" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_W8_di" bpmnElement="Flow_W8">
+        <di:waypoint x="990" y="360" />
+        <di:waypoint x="1165" y="360" />
+        <di:waypoint x="1165" y="260" />
+        <di:waypoint x="1190" y="260" />
+        <di:waypoint x="1240" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_W9_di" bpmnElement="Flow_W9">
+        <di:waypoint x="1140" y="120" />
+        <di:waypoint x="1165" y="120" />
+        <di:waypoint x="1165" y="220" />
+        <di:waypoint x="1190" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_W10_di" bpmnElement="Flow_W10">
+        <di:waypoint x="1290" y="220" />
+        <di:waypoint x="1340" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_W11_di" bpmnElement="Flow_W11">
+        <di:waypoint x="1440" y="220" />
+        <di:waypoint x="1490" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_BackAdmin_di" bpmnElement="Flow_BackAdmin">
+        <di:waypoint x="1515" y="195" />
+        <di:waypoint x="1515" y="50" />
+        <di:waypoint x="815" y="50" />
+        <di:waypoint x="815" y="95" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ToMain_di" bpmnElement="Flow_ToMain">
+        <di:waypoint x="1515" y="245" />
+        <di:waypoint x="1515" y="340" />
+        <di:waypoint x="590" y="340" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_W12_di" bpmnElement="Flow_W12">
+        <di:waypoint x="590" y="340" />
+        <di:waypoint x="640" y="340" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_W13_di" bpmnElement="Flow_W13">
+        <di:waypoint x="740" y="340" />
+        <di:waypoint x="790" y="340" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_W14_di" bpmnElement="Flow_W14">
+        <di:waypoint x="890" y="340" />
+        <di:waypoint x="940" y="340" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_W15_di" bpmnElement="Flow_W15">
+        <di:waypoint x="1040" y="340" />
+        <di:waypoint x="1090" y="340" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_W16_di" bpmnElement="Flow_W16">
+        <di:waypoint x="1190" y="340" />
+        <di:waypoint x="1240" y="340" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

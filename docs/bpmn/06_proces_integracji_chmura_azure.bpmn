@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_6" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="Process_CloudIntegration" name="Proces Integracji z Chmurą Azure" isExecutable="false">
+    <bpmn:startEvent id="StartEvent_Cloud" name="Start integracji chmurowej">
+      <bpmn:outgoing>Flow_C1</bpmn:outgoing>
+    </bpmn:startEvent>
+    
+    <bpmn:userTask id="Task_ChooseCloudService" name="Wybór usługi Azure">
+      <bpmn:incoming>Flow_C1</bpmn:incoming>
+      <bpmn:outgoing>Flow_C2</bpmn:outgoing>
+    </bpmn:userTask>
+    
+    <bpmn:exclusiveGateway id="Gateway_CloudType" name="Typ usługi?">
+      <bpmn:incoming>Flow_C2</bpmn:incoming>
+      <bpmn:outgoing>Flow_AzureSQL</bpmn:outgoing>
+      <bpmn:outgoing>Flow_CosmosDB</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    
+    <bpmn:task id="Task_ConfigureAzureSQL" name="Konfiguracja parametrów Azure SQL">
+      <bpmn:incoming>Flow_AzureSQL</bpmn:incoming>
+      <bpmn:outgoing>Flow_C3</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:task id="Task_ConfigureCosmosDB" name="Konfiguracja parametrów CosmosDB">
+      <bpmn:incoming>Flow_CosmosDB</bpmn:incoming>
+      <bpmn:outgoing>Flow_C4</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:task id="Task_TestAzureSQLConnection" name="Test połączenia Azure SQL (pyodbc)">
+      <bpmn:incoming>Flow_C3</bpmn:incoming>
+      <bpmn:outgoing>Flow_C5</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:task id="Task_TestCosmosConnection" name="Test połączenia CosmosDB (pymongo)">
+      <bpmn:incoming>Flow_C4</bpmn:incoming>
+      <bpmn:outgoing>Flow_C6</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:exclusiveGateway id="Gateway_ConnectionTest" name="Połączenie OK?">
+      <bpmn:incoming>Flow_C5</bpmn:incoming>
+      <bpmn:incoming>Flow_C6</bpmn:incoming>
+      <bpmn:outgoing>Flow_ConnSuccess</bpmn:outgoing>
+      <bpmn:outgoing>Flow_ConnFail</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    
+    <bpmn:task id="Task_ShowConnectionError" name="Wyświetlenie błędu połączenia">
+      <bpmn:incoming>Flow_ConnFail</bpmn:incoming>
+      <bpmn:outgoing>Flow_C7</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:task id="Task_RetryConnection" name="Ponowna próba konfiguracji">
+      <bpmn:incoming>Flow_C7</bpmn:incoming>
+      <bpmn:outgoing>Flow_Retry</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:task id="Task_CreateCloudSchema" name="Utworzenie schematu/kolekcji w chmurze">
+      <bpmn:incoming>Flow_ConnSuccess</bpmn:incoming>
+      <bpmn:outgoing>Flow_C8</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:task id="Task_UploadData" name="Przesłanie danych do chmury">
+      <bpmn:incoming>Flow_C8</bpmn:incoming>
+      <bpmn:outgoing>Flow_C9</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:task id="Task_MonitorUpload" name="Monitorowanie postępu przesyłania">
+      <bpmn:incoming>Flow_C9</bpmn:incoming>
+      <bpmn:outgoing>Flow_C10</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:exclusiveGateway id="Gateway_UploadComplete" name="Przesyłanie zakończone?">
+      <bpmn:incoming>Flow_C10</bpmn:incoming>
+      <bpmn:outgoing>Flow_UploadDone</bpmn:outgoing>
+      <bpmn:outgoing>Flow_UploadError</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    
+    <bpmn:task id="Task_HandleUploadError" name="Obsługa błędu przesyłania">
+      <bpmn:incoming>Flow_UploadError</bpmn:incoming>
+      <bpmn:outgoing>Flow_C11</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:endEvent id="EndEvent_UploadError" name="Integracja nieudana">
+      <bpmn:incoming>Flow_C11</bpmn:incoming>
+    </bpmn:endEvent>
+    
+    <bpmn:task id="Task_VerifyCloudData" name="Weryfikacja danych w chmurze">
+      <bpmn:incoming>Flow_UploadDone</bpmn:incoming>
+      <bpmn:outgoing>Flow_C12</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:task id="Task_ConfigureCloudIndexes" name="Konfiguracja indeksów i optymalizacja">
+      <bpmn:incoming>Flow_C12</bpmn:incoming>
+      <bpmn:outgoing>Flow_C13</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:task id="Task_SetupCloudMonitoring" name="Skonfigurowanie monitorowania Azure">
+      <bpmn:incoming>Flow_C13</bpmn:incoming>
+      <bpmn:outgoing>Flow_C14</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:task id="Task_GenerateCloudReport" name="Generowanie raportu integracji">
+      <bpmn:incoming>Flow_C14</bpmn:incoming>
+      <bpmn:outgoing>Flow_C15</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:endEvent id="EndEvent_CloudSuccess" name="Dane dostępne w chmurze Azure">
+      <bpmn:incoming>Flow_C15</bpmn:incoming>
+    </bpmn:endEvent>
+    
+    <bpmn:sequenceFlow id="Flow_C1" sourceRef="StartEvent_Cloud" targetRef="Task_ChooseCloudService" />
+    <bpmn:sequenceFlow id="Flow_C2" sourceRef="Task_ChooseCloudService" targetRef="Gateway_CloudType" />
+    <bpmn:sequenceFlow id="Flow_AzureSQL" name="Azure SQL" sourceRef="Gateway_CloudType" targetRef="Task_ConfigureAzureSQL" />
+    <bpmn:sequenceFlow id="Flow_CosmosDB" name="CosmosDB" sourceRef="Gateway_CloudType" targetRef="Task_ConfigureCosmosDB" />
+    <bpmn:sequenceFlow id="Flow_C3" sourceRef="Task_ConfigureAzureSQL" targetRef="Task_TestAzureSQLConnection" />
+    <bpmn:sequenceFlow id="Flow_C4" sourceRef="Task_ConfigureCosmosDB" targetRef="Task_TestCosmosConnection" />
+    <bpmn:sequenceFlow id="Flow_C5" sourceRef="Task_TestAzureSQLConnection" targetRef="Gateway_ConnectionTest" />
+    <bpmn:sequenceFlow id="Flow_C6" sourceRef="Task_TestCosmosConnection" targetRef="Gateway_ConnectionTest" />
+    <bpmn:sequenceFlow id="Flow_ConnSuccess" name="Tak" sourceRef="Gateway_ConnectionTest" targetRef="Task_CreateCloudSchema" />
+    <bpmn:sequenceFlow id="Flow_ConnFail" name="Nie" sourceRef="Gateway_ConnectionTest" targetRef="Task_ShowConnectionError" />
+    <bpmn:sequenceFlow id="Flow_C7" sourceRef="Task_ShowConnectionError" targetRef="Task_RetryConnection" />
+    <bpmn:sequenceFlow id="Flow_Retry" sourceRef="Task_RetryConnection" targetRef="Gateway_CloudType" />
+    <bpmn:sequenceFlow id="Flow_C8" sourceRef="Task_CreateCloudSchema" targetRef="Task_UploadData" />
+    <bpmn:sequenceFlow id="Flow_C9" sourceRef="Task_UploadData" targetRef="Task_MonitorUpload" />
+    <bpmn:sequenceFlow id="Flow_C10" sourceRef="Task_MonitorUpload" targetRef="Gateway_UploadComplete" />
+    <bpmn:sequenceFlow id="Flow_UploadDone" name="Sukces" sourceRef="Gateway_UploadComplete" targetRef="Task_VerifyCloudData" />
+    <bpmn:sequenceFlow id="Flow_UploadError" name="Błąd" sourceRef="Gateway_UploadComplete" targetRef="Task_HandleUploadError" />
+    <bpmn:sequenceFlow id="Flow_C11" sourceRef="Task_HandleUploadError" targetRef="EndEvent_UploadError" />
+    <bpmn:sequenceFlow id="Flow_C12" sourceRef="Task_VerifyCloudData" targetRef="Task_ConfigureCloudIndexes" />
+    <bpmn:sequenceFlow id="Flow_C13" sourceRef="Task_ConfigureCloudIndexes" targetRef="Task_SetupCloudMonitoring" />
+    <bpmn:sequenceFlow id="Flow_C14" sourceRef="Task_SetupCloudMonitoring" targetRef="Task_GenerateCloudReport" />
+    <bpmn:sequenceFlow id="Flow_C15" sourceRef="Task_GenerateCloudReport" targetRef="EndEvent_CloudSuccess" />
+  </bpmn:process>
+  
+  <bpmndi:BPMNDiagram id="BPMNDiagram_6">
+    <bpmndi:BPMNPlane id="BPMNPlane_6" bpmnElement="Process_CloudIntegration">
+      <bpmndi:BPMNShape id="StartEvent_Cloud_di" bpmnElement="StartEvent_Cloud">
+        <dc:Bounds x="152" y="202" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ChooseCloudService_di" bpmnElement="Task_ChooseCloudService">
+        <dc:Bounds x="240" y="180" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_CloudType_di" bpmnElement="Gateway_CloudType" isMarkerVisible="true">
+        <dc:Bounds x="390" y="195" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ConfigureAzureSQL_di" bpmnElement="Task_ConfigureAzureSQL">
+        <dc:Bounds x="490" y="100" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ConfigureCosmosDB_di" bpmnElement="Task_ConfigureCosmosDB">
+        <dc:Bounds x="490" y="260" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_TestAzureSQLConnection_di" bpmnElement="Task_TestAzureSQLConnection">
+        <dc:Bounds x="640" y="100" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_TestCosmosConnection_di" bpmnElement="Task_TestCosmosConnection">
+        <dc:Bounds x="640" y="260" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_ConnectionTest_di" bpmnElement="Gateway_ConnectionTest" isMarkerVisible="true">
+        <dc:Bounds x="790" y="195" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ShowConnectionError_di" bpmnElement="Task_ShowConnectionError">
+        <dc:Bounds x="765" y="320" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_RetryConnection_di" bpmnElement="Task_RetryConnection">
+        <dc:Bounds x="565" y="420" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_CreateCloudSchema_di" bpmnElement="Task_CreateCloudSchema">
+        <dc:Bounds x="890" y="180" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_UploadData_di" bpmnElement="Task_UploadData">
+        <dc:Bounds x="1040" y="180" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_MonitorUpload_di" bpmnElement="Task_MonitorUpload">
+        <dc:Bounds x="1190" y="180" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_UploadComplete_di" bpmnElement="Gateway_UploadComplete" isMarkerVisible="true">
+        <dc:Bounds x="1340" y="195" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_HandleUploadError_di" bpmnElement="Task_HandleUploadError">
+        <dc:Bounds x="1315" y="300" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_UploadError_di" bpmnElement="EndEvent_UploadError">
+        <dc:Bounds x="1347" y="422" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_VerifyCloudData_di" bpmnElement="Task_VerifyCloudData">
+        <dc:Bounds x="152" y="450" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ConfigureCloudIndexes_di" bpmnElement="Task_ConfigureCloudIndexes">
+        <dc:Bounds x="302" y="450" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SetupCloudMonitoring_di" bpmnElement="Task_SetupCloudMonitoring">
+        <dc:Bounds x="452" y="450" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_GenerateCloudReport_di" bpmnElement="Task_GenerateCloudReport">
+        <dc:Bounds x="602" y="450" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_CloudSuccess_di" bpmnElement="EndEvent_CloudSuccess">
+        <dc:Bounds x="752" y="472" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      
+      <bpmndi:BPMNEdge id="Flow_C1_di" bpmnElement="Flow_C1">
+        <di:waypoint x="188" y="220" />
+        <di:waypoint x="240" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_C2_di" bpmnElement="Flow_C2">
+        <di:waypoint x="340" y="220" />
+        <di:waypoint x="390" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_AzureSQL_di" bpmnElement="Flow_AzureSQL">
+        <di:waypoint x="415" y="195" />
+        <di:waypoint x="415" y="140" />
+        <di:waypoint x="490" y="140" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_CosmosDB_di" bpmnElement="Flow_CosmosDB">
+        <di:waypoint x="415" y="245" />
+        <di:waypoint x="415" y="300" />
+        <di:waypoint x="490" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_C3_di" bpmnElement="Flow_C3">
+        <di:waypoint x="590" y="140" />
+        <di:waypoint x="640" y="140" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_C4_di" bpmnElement="Flow_C4">
+        <di:waypoint x="590" y="300" />
+        <di:waypoint x="640" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_C5_di" bpmnElement="Flow_C5">
+        <di:waypoint x="740" y="140" />
+        <di:waypoint x="765" y="140" />
+        <di:waypoint x="765" y="220" />
+        <di:waypoint x="790" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_C6_di" bpmnElement="Flow_C6">
+        <di:waypoint x="740" y="300" />
+        <di:waypoint x="765" y="300" />
+        <di:waypoint x="765" y="220" />
+        <di:waypoint x="790" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ConnSuccess_di" bpmnElement="Flow_ConnSuccess">
+        <di:waypoint x="840" y="220" />
+        <di:waypoint x="890" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ConnFail_di" bpmnElement="Flow_ConnFail">
+        <di:waypoint x="815" y="245" />
+        <di:waypoint x="815" y="320" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_C7_di" bpmnElement="Flow_C7">
+        <di:waypoint x="815" y="400" />
+        <di:waypoint x="815" y="410" />
+        <di:waypoint x="615" y="410" />
+        <di:waypoint x="615" y="420" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Retry_di" bpmnElement="Flow_Retry">
+        <di:waypoint x="615" y="500" />
+        <di:waypoint x="615" y="520" />
+        <di:waypoint x="415" y="520" />
+        <di:waypoint x="415" y="245" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_C8_di" bpmnElement="Flow_C8">
+        <di:waypoint x="990" y="220" />
+        <di:waypoint x="1040" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_C9_di" bpmnElement="Flow_C9">
+        <di:waypoint x="1140" y="220" />
+        <di:waypoint x="1190" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_C10_di" bpmnElement="Flow_C10">
+        <di:waypoint x="1290" y="220" />
+        <di:waypoint x="1340" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_UploadDone_di" bpmnElement="Flow_UploadDone">
+        <di:waypoint x="1365" y="245" />
+        <di:waypoint x="1365" y="420" />
+        <di:waypoint x="202" y="420" />
+        <di:waypoint x="202" y="450" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_UploadError_di" bpmnElement="Flow_UploadError">
+        <di:waypoint x="1365" y="245" />
+        <di:waypoint x="1365" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_C11_di" bpmnElement="Flow_C11">
+        <di:waypoint x="1365" y="380" />
+        <di:waypoint x="1365" y="422" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_C12_di" bpmnElement="Flow_C12">
+        <di:waypoint x="252" y="490" />
+        <di:waypoint x="302" y="490" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_C13_di" bpmnElement="Flow_C13">
+        <di:waypoint x="402" y="490" />
+        <di:waypoint x="452" y="490" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_C14_di" bpmnElement="Flow_C14">
+        <di:waypoint x="552" y="490" />
+        <di:waypoint x="602" y="490" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_C15_di" bpmnElement="Flow_C15">
+        <di:waypoint x="702" y="490" />
+        <di:waypoint x="752" y="490" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

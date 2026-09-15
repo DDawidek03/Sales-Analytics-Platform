@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="Process_MainDataGeneration" name="Główny Proces Generowania Danych" isExecutable="false">
+    <bpmn:startEvent id="StartEvent_1" name="Użytkownik otwiera panel administracyjny">
+      <bpmn:outgoing>Flow_1</bpmn:outgoing>
+    </bpmn:startEvent>
+    
+    <bpmn:userTask id="Task_ChooseDataType" name="Wybór typu danych do wygenerowania">
+      <bpmn:incoming>Flow_1</bpmn:incoming>
+      <bpmn:outgoing>Flow_2</bpmn:outgoing>
+    </bpmn:userTask>
+    
+    <bpmn:exclusiveGateway id="Gateway_DataType" name="Typ danych?">
+      <bpmn:incoming>Flow_2</bpmn:incoming>
+      <bpmn:outgoing>Flow_SQL</bpmn:outgoing>
+      <bpmn:outgoing>Flow_NoSQL</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Both</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    
+    <bpmn:task id="Task_GenerateSQL" name="Generowanie danych relacyjnych (SQL)">
+      <bpmn:incoming>Flow_SQL</bpmn:incoming>
+      <bpmn:incoming>Flow_Both_SQL</bpmn:incoming>
+      <bpmn:outgoing>Flow_AfterSQL</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:task id="Task_GenerateNoSQL" name="Generowanie danych NoSQL (MongoDB)">
+      <bpmn:incoming>Flow_NoSQL</bpmn:incoming>
+      <bpmn:incoming>Flow_Both_NoSQL</bpmn:incoming>
+      <bpmn:outgoing>Flow_AfterNoSQL</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:parallelGateway id="Gateway_ParallelSplit" name="Generuj oba">
+      <bpmn:incoming>Flow_Both</bpmn:incoming>
+      <bpmn:outgoing>Flow_Both_SQL</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Both_NoSQL</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    
+    <bpmn:parallelGateway id="Gateway_ParallelJoin">
+      <bpmn:incoming>Flow_AfterSQL</bpmn:incoming>
+      <bpmn:incoming>Flow_AfterNoSQL</bpmn:incoming>
+      <bpmn:outgoing>Flow_3</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    
+    <bpmn:task id="Task_ValidateData" name="Walidacja wygenerowanych danych">
+      <bpmn:incoming>Flow_3</bpmn:incoming>
+      <bpmn:outgoing>Flow_4</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:exclusiveGateway id="Gateway_Validation" name="Dane poprawne?">
+      <bpmn:incoming>Flow_4</bpmn:incoming>
+      <bpmn:outgoing>Flow_Valid</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Invalid</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    
+    <bpmn:task id="Task_ShowError" name="Wyświetl komunikat błędu">
+      <bpmn:incoming>Flow_Invalid</bpmn:incoming>
+      <bpmn:outgoing>Flow_ErrorEnd</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:endEvent id="EndEvent_Error" name="Zakończenie z błędem">
+      <bpmn:incoming>Flow_ErrorEnd</bpmn:incoming>
+    </bpmn:endEvent>
+    
+    <bpmn:userTask id="Task_ChooseDatabase" name="Wybór docelowej bazy danych">
+      <bpmn:incoming>Flow_Valid</bpmn:incoming>
+      <bpmn:outgoing>Flow_5</bpmn:outgoing>
+    </bpmn:userTask>
+    
+    <bpmn:task id="Task_LoadData" name="Załadowanie danych do bazy">
+      <bpmn:incoming>Flow_5</bpmn:incoming>
+      <bpmn:outgoing>Flow_6</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:task id="Task_ShowSuccess" name="Wyświetl potwierdzenie sukcesu">
+      <bpmn:incoming>Flow_6</bpmn:incoming>
+      <bpmn:outgoing>Flow_7</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:endEvent id="EndEvent_Success" name="Dane gotowe do analizy">
+      <bpmn:incoming>Flow_7</bpmn:incoming>
+    </bpmn:endEvent>
+    
+    <bpmn:sequenceFlow id="Flow_1" sourceRef="StartEvent_1" targetRef="Task_ChooseDataType" />
+    <bpmn:sequenceFlow id="Flow_2" sourceRef="Task_ChooseDataType" targetRef="Gateway_DataType" />
+    <bpmn:sequenceFlow id="Flow_SQL" name="SQL" sourceRef="Gateway_DataType" targetRef="Task_GenerateSQL" />
+    <bpmn:sequenceFlow id="Flow_NoSQL" name="NoSQL" sourceRef="Gateway_DataType" targetRef="Task_GenerateNoSQL" />
+    <bpmn:sequenceFlow id="Flow_Both" name="Oba" sourceRef="Gateway_DataType" targetRef="Gateway_ParallelSplit" />
+    <bpmn:sequenceFlow id="Flow_Both_SQL" sourceRef="Gateway_ParallelSplit" targetRef="Task_GenerateSQL" />
+    <bpmn:sequenceFlow id="Flow_Both_NoSQL" sourceRef="Gateway_ParallelSplit" targetRef="Task_GenerateNoSQL" />
+    <bpmn:sequenceFlow id="Flow_AfterSQL" sourceRef="Task_GenerateSQL" targetRef="Gateway_ParallelJoin" />
+    <bpmn:sequenceFlow id="Flow_AfterNoSQL" sourceRef="Task_GenerateNoSQL" targetRef="Gateway_ParallelJoin" />
+    <bpmn:sequenceFlow id="Flow_3" sourceRef="Gateway_ParallelJoin" targetRef="Task_ValidateData" />
+    <bpmn:sequenceFlow id="Flow_4" sourceRef="Task_ValidateData" targetRef="Gateway_Validation" />
+    <bpmn:sequenceFlow id="Flow_Valid" name="Tak" sourceRef="Gateway_Validation" targetRef="Task_ChooseDatabase" />
+    <bpmn:sequenceFlow id="Flow_Invalid" name="Nie" sourceRef="Gateway_Validation" targetRef="Task_ShowError" />
+    <bpmn:sequenceFlow id="Flow_ErrorEnd" sourceRef="Task_ShowError" targetRef="EndEvent_Error" />
+    <bpmn:sequenceFlow id="Flow_5" sourceRef="Task_ChooseDatabase" targetRef="Task_LoadData" />
+    <bpmn:sequenceFlow id="Flow_6" sourceRef="Task_LoadData" targetRef="Task_ShowSuccess" />
+    <bpmn:sequenceFlow id="Flow_7" sourceRef="Task_ShowSuccess" targetRef="EndEvent_Success" />
+  </bpmn:process>
+  
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_MainDataGeneration">
+      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="152" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ChooseDataType_di" bpmnElement="Task_ChooseDataType">
+        <dc:Bounds x="240" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_DataType_di" bpmnElement="Gateway_DataType" isMarkerVisible="true">
+        <dc:Bounds x="390" y="95" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_GenerateSQL_di" bpmnElement="Task_GenerateSQL">
+        <dc:Bounds x="500" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_GenerateNoSQL_di" bpmnElement="Task_GenerateNoSQL">
+        <dc:Bounds x="500" y="220" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_ParallelSplit_di" bpmnElement="Gateway_ParallelSplit">
+        <dc:Bounds x="390" y="235" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_ParallelJoin_di" bpmnElement="Gateway_ParallelJoin">
+        <dc:Bounds x="650" y="155" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ValidateData_di" bpmnElement="Task_ValidateData">
+        <dc:Bounds x="750" y="140" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Validation_di" bpmnElement="Gateway_Validation" isMarkerVisible="true">
+        <dc:Bounds x="900" y="155" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ShowError_di" bpmnElement="Task_ShowError">
+        <dc:Bounds x="875" y="280" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_Error_di" bpmnElement="EndEvent_Error">
+        <dc:Bounds x="907" y="402" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ChooseDatabase_di" bpmnElement="Task_ChooseDatabase">
+        <dc:Bounds x="1000" y="140" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_LoadData_di" bpmnElement="Task_LoadData">
+        <dc:Bounds x="1150" y="140" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ShowSuccess_di" bpmnElement="Task_ShowSuccess">
+        <dc:Bounds x="1300" y="140" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_Success_di" bpmnElement="EndEvent_Success">
+        <dc:Bounds x="1450" y="162" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      
+      <bpmndi:BPMNEdge id="Flow_1_di" bpmnElement="Flow_1">
+        <di:waypoint x="188" y="120" />
+        <di:waypoint x="240" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_2_di" bpmnElement="Flow_2">
+        <di:waypoint x="340" y="120" />
+        <di:waypoint x="390" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_SQL_di" bpmnElement="Flow_SQL">
+        <di:waypoint x="440" y="120" />
+        <di:waypoint x="500" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_NoSQL_di" bpmnElement="Flow_NoSQL">
+        <di:waypoint x="415" y="145" />
+        <di:waypoint x="415" y="260" />
+        <di:waypoint x="500" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Both_di" bpmnElement="Flow_Both">
+        <di:waypoint x="415" y="145" />
+        <di:waypoint x="415" y="235" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Both_SQL_di" bpmnElement="Flow_Both_SQL">
+        <di:waypoint x="440" y="260" />
+        <di:waypoint x="470" y="260" />
+        <di:waypoint x="470" y="120" />
+        <di:waypoint x="500" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Both_NoSQL_di" bpmnElement="Flow_Both_NoSQL">
+        <di:waypoint x="440" y="260" />
+        <di:waypoint x="500" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_AfterSQL_di" bpmnElement="Flow_AfterSQL">
+        <di:waypoint x="600" y="120" />
+        <di:waypoint x="675" y="120" />
+        <di:waypoint x="675" y="155" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_AfterNoSQL_di" bpmnElement="Flow_AfterNoSQL">
+        <di:waypoint x="600" y="260" />
+        <di:waypoint x="675" y="260" />
+        <di:waypoint x="675" y="205" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_3_di" bpmnElement="Flow_3">
+        <di:waypoint x="700" y="180" />
+        <di:waypoint x="750" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_4_di" bpmnElement="Flow_4">
+        <di:waypoint x="850" y="180" />
+        <di:waypoint x="900" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Valid_di" bpmnElement="Flow_Valid">
+        <di:waypoint x="950" y="180" />
+        <di:waypoint x="1000" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Invalid_di" bpmnElement="Flow_Invalid">
+        <di:waypoint x="925" y="205" />
+        <di:waypoint x="925" y="280" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ErrorEnd_di" bpmnElement="Flow_ErrorEnd">
+        <di:waypoint x="925" y="360" />
+        <di:waypoint x="925" y="402" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_5_di" bpmnElement="Flow_5">
+        <di:waypoint x="1100" y="180" />
+        <di:waypoint x="1150" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_6_di" bpmnElement="Flow_6">
+        <di:waypoint x="1250" y="180" />
+        <di:waypoint x="1300" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_7_di" bpmnElement="Flow_7">
+        <di:waypoint x="1400" y="180" />
+        <di:waypoint x="1450" y="180" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

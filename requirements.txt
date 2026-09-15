@@ -1,0 +1,23 @@
+# GlobalVista Analytics - Zależności Python
+
+# Framework webowy
+flask>=2.0
+flask-login>=0.6
+
+# Bazy danych
+pyodbc>=4.0
+pymongo>=4.0
+
+# Azure Cloud
+azure-cosmos>=4.0
+
+# Konfiguracja
+python-dotenv>=1.0
+
+# Przetwarzanie danych
+pandas>=1.5
+numpy>=1.21
+
+# Generowanie danych
+faker>=18.0
+

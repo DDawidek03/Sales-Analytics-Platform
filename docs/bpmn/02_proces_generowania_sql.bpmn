@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_2" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="Process_SQLGeneration" name="Proces Generowania Danych SQL" isExecutable="false">
+    <bpmn:startEvent id="StartEvent_SQL" name="Start generowania SQL">
+      <bpmn:outgoing>Flow_S1</bpmn:outgoing>
+    </bpmn:startEvent>
+    
+    <bpmn:userTask id="Task_InputRecords" name="Podanie liczby rekordów">
+      <bpmn:incoming>Flow_S1</bpmn:incoming>
+      <bpmn:outgoing>Flow_S2</bpmn:outgoing>
+    </bpmn:userTask>
+    
+    <bpmn:task id="Task_ValidateInput" name="Walidacja danych wejściowych">
+      <bpmn:incoming>Flow_S2</bpmn:incoming>
+      <bpmn:outgoing>Flow_S3</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:exclusiveGateway id="Gateway_InputValid" name="Dane poprawne?">
+      <bpmn:incoming>Flow_S3</bpmn:incoming>
+      <bpmn:outgoing>Flow_Valid_S</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Invalid_S</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    
+    <bpmn:task id="Task_ShowInputError" name="Wyświetl błąd walidacji">
+      <bpmn:incoming>Flow_Invalid_S</bpmn:incoming>
+      <bpmn:outgoing>Flow_BackToInput</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:task id="Task_InitializeGenerator" name="Inicjalizacja generatora (Faker, numpy)">
+      <bpmn:incoming>Flow_Valid_S</bpmn:incoming>
+      <bpmn:outgoing>Flow_S4</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:task id="Task_GenerateRegions" name="Generowanie regionów">
+      <bpmn:incoming>Flow_S4</bpmn:incoming>
+      <bpmn:outgoing>Flow_S5</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:task id="Task_GenerateCountries" name="Generowanie krajów">
+      <bpmn:incoming>Flow_S5</bpmn:incoming>
+      <bpmn:outgoing>Flow_S6</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:task id="Task_GenerateCategories" name="Generowanie kategorii produktów">
+      <bpmn:incoming>Flow_S6</bpmn:incoming>
+      <bpmn:outgoing>Flow_S7</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:task id="Task_GenerateProducts" name="Generowanie produktów">
+      <bpmn:incoming>Flow_S7</bpmn:incoming>
+      <bpmn:outgoing>Flow_S8</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:task id="Task_GenerateSellers" name="Generowanie sprzedawców">
+      <bpmn:incoming>Flow_S8</bpmn:incoming>
+      <bpmn:outgoing>Flow_S9</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:task id="Task_GenerateCustomers" name="Generowanie klientów">
+      <bpmn:incoming>Flow_S9</bpmn:incoming>
+      <bpmn:outgoing>Flow_S10</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:task id="Task_GenerateBankAccounts" name="Generowanie kont bankowych">
+      <bpmn:incoming>Flow_S10</bpmn:incoming>
+      <bpmn:outgoing>Flow_S11</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:task id="Task_GenerateDateDim" name="Generowanie wymiaru czasu">
+      <bpmn:incoming>Flow_S11</bpmn:incoming>
+      <bpmn:outgoing>Flow_S12</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:task id="Task_SaveCSV" name="Zapis danych do plików CSV">
+      <bpmn:incoming>Flow_S12</bpmn:incoming>
+      <bpmn:outgoing>Flow_S13</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:task id="Task_GenerateStats" name="Generowanie statystyk">
+      <bpmn:incoming>Flow_S13</bpmn:incoming>
+      <bpmn:outgoing>Flow_S14</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:task id="Task_DisplayProgress" name="Wyświetlanie postępu i podsumowania">
+      <bpmn:incoming>Flow_S14</bpmn:incoming>
+      <bpmn:outgoing>Flow_S15</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:endEvent id="EndEvent_SQL" name="Pliki CSV wygenerowane">
+      <bpmn:incoming>Flow_S15</bpmn:incoming>
+    </bpmn:endEvent>
+    
+    <bpmn:sequenceFlow id="Flow_S1" sourceRef="StartEvent_SQL" targetRef="Task_InputRecords" />
+    <bpmn:sequenceFlow id="Flow_S2" sourceRef="Task_InputRecords" targetRef="Task_ValidateInput" />
+    <bpmn:sequenceFlow id="Flow_S3" sourceRef="Task_ValidateInput" targetRef="Gateway_InputValid" />
+    <bpmn:sequenceFlow id="Flow_Valid_S" name="Tak" sourceRef="Gateway_InputValid" targetRef="Task_InitializeGenerator" />
+    <bpmn:sequenceFlow id="Flow_Invalid_S" name="Nie" sourceRef="Gateway_InputValid" targetRef="Task_ShowInputError" />
+    <bpmn:sequenceFlow id="Flow_BackToInput" sourceRef="Task_ShowInputError" targetRef="Task_InputRecords" />
+    <bpmn:sequenceFlow id="Flow_S4" sourceRef="Task_InitializeGenerator" targetRef="Task_GenerateRegions" />
+    <bpmn:sequenceFlow id="Flow_S5" sourceRef="Task_GenerateRegions" targetRef="Task_GenerateCountries" />
+    <bpmn:sequenceFlow id="Flow_S6" sourceRef="Task_GenerateCountries" targetRef="Task_GenerateCategories" />
+    <bpmn:sequenceFlow id="Flow_S7" sourceRef="Task_GenerateCategories" targetRef="Task_GenerateProducts" />
+    <bpmn:sequenceFlow id="Flow_S8" sourceRef="Task_GenerateProducts" targetRef="Task_GenerateSellers" />
+    <bpmn:sequenceFlow id="Flow_S9" sourceRef="Task_GenerateSellers" targetRef="Task_GenerateCustomers" />
+    <bpmn:sequenceFlow id="Flow_S10" sourceRef="Task_GenerateCustomers" targetRef="Task_GenerateBankAccounts" />
+    <bpmn:sequenceFlow id="Flow_S11" sourceRef="Task_GenerateBankAccounts" targetRef="Task_GenerateDateDim" />
+    <bpmn:sequenceFlow id="Flow_S12" sourceRef="Task_GenerateDateDim" targetRef="Task_SaveCSV" />
+    <bpmn:sequenceFlow id="Flow_S13" sourceRef="Task_SaveCSV" targetRef="Task_GenerateStats" />
+    <bpmn:sequenceFlow id="Flow_S14" sourceRef="Task_GenerateStats" targetRef="Task_DisplayProgress" />
+    <bpmn:sequenceFlow id="Flow_S15" sourceRef="Task_DisplayProgress" targetRef="EndEvent_SQL" />
+  </bpmn:process>
+  
+  <bpmndi:BPMNDiagram id="BPMNDiagram_2">
+    <bpmndi:BPMNPlane id="BPMNPlane_2" bpmnElement="Process_SQLGeneration">
+      <bpmndi:BPMNShape id="StartEvent_SQL_di" bpmnElement="StartEvent_SQL">
+        <dc:Bounds x="152" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_InputRecords_di" bpmnElement="Task_InputRecords">
+        <dc:Bounds x="240" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ValidateInput_di" bpmnElement="Task_ValidateInput">
+        <dc:Bounds x="390" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_InputValid_di" bpmnElement="Gateway_InputValid" isMarkerVisible="true">
+        <dc:Bounds x="540" y="95" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ShowInputError_di" bpmnElement="Task_ShowInputError">
+        <dc:Bounds x="390" y="200" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_InitializeGenerator_di" bpmnElement="Task_InitializeGenerator">
+        <dc:Bounds x="640" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_GenerateRegions_di" bpmnElement="Task_GenerateRegions">
+        <dc:Bounds x="790" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_GenerateCountries_di" bpmnElement="Task_GenerateCountries">
+        <dc:Bounds x="940" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_GenerateCategories_di" bpmnElement="Task_GenerateCategories">
+        <dc:Bounds x="1090" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_GenerateProducts_di" bpmnElement="Task_GenerateProducts">
+        <dc:Bounds x="152" y="220" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_GenerateSellers_di" bpmnElement="Task_GenerateSellers">
+        <dc:Bounds x="302" y="220" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_GenerateCustomers_di" bpmnElement="Task_GenerateCustomers">
+        <dc:Bounds x="452" y="220" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_GenerateBankAccounts_di" bpmnElement="Task_GenerateBankAccounts">
+        <dc:Bounds x="602" y="220" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_GenerateDateDim_di" bpmnElement="Task_GenerateDateDim">
+        <dc:Bounds x="752" y="220" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SaveCSV_di" bpmnElement="Task_SaveCSV">
+        <dc:Bounds x="902" y="220" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_GenerateStats_di" bpmnElement="Task_GenerateStats">
+        <dc:Bounds x="1052" y="220" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_DisplayProgress_di" bpmnElement="Task_DisplayProgress">
+        <dc:Bounds x="1202" y="220" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_SQL_di" bpmnElement="EndEvent_SQL">
+        <dc:Bounds x="1352" y="242" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      
+      <bpmndi:BPMNEdge id="Flow_S1_di" bpmnElement="Flow_S1">
+        <di:waypoint x="188" y="120" />
+        <di:waypoint x="240" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_S2_di" bpmnElement="Flow_S2">
+        <di:waypoint x="340" y="120" />
+        <di:waypoint x="390" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_S3_di" bpmnElement="Flow_S3">
+        <di:waypoint x="490" y="120" />
+        <di:waypoint x="540" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Valid_S_di" bpmnElement="Flow_Valid_S">
+        <di:waypoint x="590" y="120" />
+        <di:waypoint x="640" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Invalid_S_di" bpmnElement="Flow_Invalid_S">
+        <di:waypoint x="565" y="145" />
+        <di:waypoint x="565" y="170" />
+        <di:waypoint x="440" y="170" />
+        <di:waypoint x="440" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_BackToInput_di" bpmnElement="Flow_BackToInput">
+        <di:waypoint x="390" y="240" />
+        <di:waypoint x="290" y="240" />
+        <di:waypoint x="290" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_S4_di" bpmnElement="Flow_S4">
+        <di:waypoint x="740" y="120" />
+        <di:waypoint x="790" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_S5_di" bpmnElement="Flow_S5">
+        <di:waypoint x="890" y="120" />
+        <di:waypoint x="940" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_S6_di" bpmnElement="Flow_S6">
+        <di:waypoint x="1040" y="120" />
+        <di:waypoint x="1090" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_S7_di" bpmnElement="Flow_S7">
+        <di:waypoint x="1140" y="160" />
+        <di:waypoint x="1140" y="190" />
+        <di:waypoint x="202" y="190" />
+        <di:waypoint x="202" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_S8_di" bpmnElement="Flow_S8">
+        <di:waypoint x="252" y="260" />
+        <di:waypoint x="302" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_S9_di" bpmnElement="Flow_S9">
+        <di:waypoint x="402" y="260" />
+        <di:waypoint x="452" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_S10_di" bpmnElement="Flow_S10">
+        <di:waypoint x="552" y="260" />
+        <di:waypoint x="602" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_S11_di" bpmnElement="Flow_S11">
+        <di:waypoint x="702" y="260" />
+        <di:waypoint x="752" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_S12_di" bpmnElement="Flow_S12">
+        <di:waypoint x="852" y="260" />
+        <di:waypoint x="902" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_S13_di" bpmnElement="Flow_S13">
+        <di:waypoint x="1002" y="260" />
+        <di:waypoint x="1052" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_S14_di" bpmnElement="Flow_S14">
+        <di:waypoint x="1152" y="260" />
+        <di:waypoint x="1202" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_S15_di" bpmnElement="Flow_S15">
+        <di:waypoint x="1302" y="260" />
+        <di:waypoint x="1352" y="260" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

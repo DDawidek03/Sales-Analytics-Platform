@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administracyjny - GlobalVista</title>
+    <link href="tailwind.css" rel="stylesheet">
+    <link href="admin.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body style="background-color: #F9F9F9;">
+    
+    <nav style="background: linear-gradient(to right, #4A5D6B, #506E80); border-color: #6E7F89;" class="shadow-lg border-b px-8 py-4 fixed top-0 left-0 right-0 z-50">
+        <div class="flex justify-between items-center">
+            <div class="flex items-center space-x-6">
+                <a href="index.html" class="flex items-center space-x-3 group">
+                    <div class="w-10 h-10 rounded-lg flex items-center justify-center transform group-hover:scale-105 transition-transform duration-200 shadow-lg" style="background: linear-gradient(135deg, #F1A263, #4C889E);">
+                        <i class="fas fa-shield-alt text-white text-lg"></i>
+                    </div>
+                    <span class="text-2xl font-bold text-white">GlobalVista Admin</span>
+                </a>
+                <div class="hidden md:flex items-center space-x-2 text-sm text-gray-400">
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <span class="font-medium text-gray-300">Panel Administracyjny</span>
+                </div>
+            </div>
+            <div class="flex items-center space-x-3">
+                <div id="userInfo" class="text-sm text-gray-300 hidden items-center space-x-2">
+                    <i class="fas fa-user-circle text-lg"></i>
+                    <span id="currentUsername"></span>
+                    <span id="currentUserRole" class="px-2 py-1 rounded text-xs font-semibold" style="background: #F1A263;"></span>
+                </div>
+                
+                <a href="index.html" class="nav-btn nav-btn-dark">
+                    <i class="fas fa-home"></i>
+                    <span class="hidden sm:inline">Strona Główna</span>
+                </a>
+                <a href="dashboard.html" class="nav-btn nav-btn-dark">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span class="hidden sm:inline">Dashboard</span>
+                </a>
+                <a href="powerbi.html" class="nav-btn nav-btn-dark" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <i class="fas fa-chart-bar"></i>
+                    <span class="hidden sm:inline">Power BI</span>
+                </a>
+                
+                <button id="logoutBtn" class="nav-btn nav-btn-dark" style="display: none;" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span class="hidden sm:inline">Wyloguj</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex min-h-screen">
+        
+        <div class="w-64 text-white p-6 shadow-xl" style="background: linear-gradient(to bottom, #4A5D6B, #506E80);">
+            <h2 class="text-lg font-bold mb-6 pb-3 flex items-center" style="border-bottom: 1px solid #6E7F89;">
+                <i class="fas fa-cog mr-3" style="color: #F1A263;"></i>
+                Panel Administracyjny
+            </h2>
+
+            
+            <div class="mb-6">
+                <h3 class="uppercase text-xs font-semibold mb-3" style="color: #F1D4C4;">
+                    Statusy Systemów
+                </h3>
+                <div class="space-y-2">
+                    <div class="sidebar-stat">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm">SQL Server</span>
+                            <span class="status-dot-small" id="sidebar-sql-status"></span>
+                        </div>
+                    </div>
+                    <div class="sidebar-stat">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm">MongoDB</span>
+                            <span class="status-dot-small" id="sidebar-mongo-status"></span>
+                        </div>
+                    </div>
+                    <div class="sidebar-stat">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm">Azure SQL</span>
+                            <span class="status-dot-small" id="sidebar-azure-status"></span>
+                        </div>
+                    </div>
+                    <div class="sidebar-stat">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm">Cosmos DB</span>
+                            <span class="status-dot-small" id="sidebar-cosmos-status"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            
+            <div class="mb-6">
+                <h3 class="uppercase text-xs font-semibold mb-3" style="color: #F1D4C4;">
+                    Akcje
+                </h3>
+                <ul class="space-y-2">
+                    <li>
+                        <a href="#status-section" class="sidebar-link">
+                            <i class="fas fa-heartbeat mr-2"></i>Status Baz
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#generator-section" class="sidebar-link">
+                            <i class="fas fa-magic mr-2"></i>Generator Danych
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#sync-section" class="sidebar-link">
+                            <i class="fas fa-sync-alt mr-2"></i>Synchronizacja
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#management-section" class="sidebar-link">
+                            <i class="fas fa-tools mr-2"></i>Zarządzanie
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            
+            <div class="mt-auto pt-6" style="border-top: 1px solid #6E7F89;">
+                <a href="dashboard.html" class="sidebar-link">
+                    <i class="fas fa-arrow-left mr-2"></i>Powrót do Dashboard
+                </a>
+            </div>
+        </div>
+
+        
+        <div class="flex-1 overflow-auto" style="background-color: #F9F9F9;" id="main-content">
+            <div class="admin-container">
+                
+                <div class="mb-8 animate-fade-in">
+                    <h2 class="text-3xl font-bold mb-2" style="color: #4A5D6B;">
+                        Panel Administracyjny
+                    </h2>
+                    <p style="color: #6E7F89;">
+                        Zarządzanie danymi, generowanie testów i monitoring systemu
+                    </p>
+                </div>
+
+                
+                <section id="status-section" class="mb-8">
+                    <h3 class="text-xl font-semibold mb-4 flex items-center" style="color: #4A5D6B;">
+                        <i class="fas fa-server mr-2" style="color: #F1A263;"></i>
+                        Status Baz Danych
+                    </h3>
+                    <div class="status-grid">
+                        
+                <div class="status-card sql-card">
+                    <div class="status-card-header">
+                        <div class="flex items-center gap-3">
+                            <div class="status-icon sql-icon">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="status-card-title">SQL Server</div>
+                                <div class="status-card-subtitle">Baza lokalna</div>
+                            </div>
+                        </div>
+                        <div class="status-indicator" id="sql-status-indicator">
+                            <span class="status-dot"></span>
+                            <span class="status-text">Sprawdzanie...</span>
+                        </div>
+                    </div>
+                    <div class="status-card-body">
+                        <div class="metric-value" id="sql-records">—</div>
+                        <div class="metric-label">rekordów w bazie</div>
+                    </div>
+                </div>
+
+                
+                <div class="status-card mongo-card">
+                    <div class="status-card-header">
+                        <div class="flex items-center gap-3">
+                            <div class="status-icon mongo-icon">
+                                <i class="fas fa-leaf"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="status-card-title">MongoDB</div>
+                                <div class="status-card-subtitle">Baza lokalna</div>
+                            </div>
+                        </div>
+                        <div class="status-indicator" id="mongo-status-indicator">
+                            <span class="status-dot"></span>
+                            <span class="status-text">Sprawdzanie...</span>
+                        </div>
+                    </div>
+                    <div class="status-card-body">
+                        <div class="metric-value" id="mongo-records">—</div>
+                        <div class="metric-label">dokumentów w bazie</div>
+                    </div>
+                </div>
+
+                
+                <div class="status-card azure-sql-card">
+                    <div class="status-card-header">
+                        <div class="flex items-center gap-3">
+                            <div class="status-icon azure-icon">
+                                <i class="fas fa-cloud"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="status-card-title">Azure SQL</div>
+                                <div class="status-card-subtitle">Chmura Azure</div>
+                            </div>
+                        </div>
+                        <div class="status-indicator" id="azure-sql-status-indicator">
+                            <span class="status-dot"></span>
+                            <span class="status-text">Sprawdzanie...</span>
+                        </div>
+                    </div>
+                    <div class="status-card-body">
+                        <div class="metric-value" id="azure-sql-records">—</div>
+                        <div class="metric-label">rekordów w chmurze</div>
+                    </div>
+                </div>
+
+                
+                <div class="status-card cosmos-card">
+                    <div class="status-card-header">
+                        <div class="flex items-center gap-3">
+                            <div class="status-icon cosmos-icon">
+                                <i class="fas fa-globe"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="status-card-title">Cosmos DB</div>
+                                <div class="status-card-subtitle">Chmura Azure</div>
+                            </div>
+                        </div>
+                        <div class="status-indicator" id="cosmos-status-indicator">
+                            <span class="status-dot"></span>
+                            <span class="status-text">Sprawdzanie...</span>
+                        </div>
+                    </div>
+                    <div class="status-card-body">
+                        <div class="metric-value" id="cosmos-records">—</div>
+                        <div class="metric-label">dokumentów w chmurze</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="generator-section" class="mb-8">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">Generator Danych Testowych</h2>
+                            <p class="text-gray-600">Generuj i ładuj dane testowe do baz danych SQL Server i MongoDB</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            
+                            <div class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+                                <div class="flex items-center mb-4">
+                                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                                        <i class="fas fa-database text-blue-600 text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-gray-900">SQL Server</h3>
+                                        <p class="text-sm text-gray-500">Generuj 1000 zamówień + dane powiązane</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex gap-3 mb-4">
+                                    <button id="btn-generate-sql" class="btn btn-primary flex-1">
+                                        <i class="fas fa-magic mr-2"></i>
+                                        Generuj
+                                    </button>
+                                    <button id="btn-load-sql" class="btn btn-success flex-1">
+                                        <i class="fas fa-upload mr-2"></i>
+                                        Załaduj
+                                    </button>
+                                </div>
+
+                                <div id="sql-progress" class="hidden">
+                                    <div class="w-full bg-gray-200 rounded-full h-2.5 mb-2">
+                                        <div id="sql-progress-bar" class="bg-blue-600 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                                    </div>
+                                    <p id="sql-progress-text" class="text-sm text-gray-600 text-center">Oczekiwanie...</p>
+                                </div>
+
+                                <div id="sql-status" class="hidden mt-4"></div>
+                            </div>
+
+                            
+                            <div class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+                                <div class="flex items-center mb-4">
+                                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4">
+                                        <i class="fas fa-leaf text-green-600 text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-gray-900">MongoDB</h3>
+                                        <p class="text-sm text-gray-500">Transformacja danych z SQL</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex gap-3 mb-4">
+                                    <button id="btn-generate-mongo" class="btn btn-primary flex-1">
+                                        <i class="fas fa-magic mr-2"></i>
+                                        Generuj
+                                    </button>
+                                    <button id="btn-load-mongo" class="btn btn-success flex-1">
+                                        <i class="fas fa-upload mr-2"></i>
+                                        Załaduj
+                                    </button>
+                                </div>
+
+                                <div id="mongo-progress" class="hidden">
+                                    <div class="w-full bg-gray-200 rounded-full h-2.5 mb-2">
+                                        <div id="mongo-progress-bar" class="bg-green-600 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                                    </div>
+                                    <p id="mongo-progress-text" class="text-sm text-gray-600 text-center">Oczekiwanie...</p>
+                                </div>
+
+                                <div id="mongo-status" class="hidden mt-4"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                        
+                        <div class="mt-6 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl p-6 text-white">
+                            <div class="flex items-center justify-between flex-wrap gap-4">
+                                <div>
+                                    <h3 class="text-lg font-semibold flex items-center">
+                                        <i class="fas fa-rocket mr-3"></i>
+                                        Szybkie akcje
+                                    </h3>
+                                    <p class="text-blue-100 mt-1">Generuj i załaduj dane dla obu baz jednocześnie</p>
+                                </div>
+                                <button id="btn-generate-all" class="bg-white text-blue-600 hover:bg-blue-50 px-6 py-3 rounded-lg font-semibold transition">
+                                    <i class="fas fa-bolt mr-2"></i>
+                                    Wykonaj wszystko
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+
+                    
+                    <section id="sync-section" class="mb-8">
+                        <div class="mb-6">
+                            <h2 class="text-2xl font-bold text-gray-900 mb-2">Synchronizacja z Azure</h2>
+                            <p class="text-gray-600">Migruj dane z lokalnych baz do Azure SQL Database i Cosmos DB</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            
+                            <div class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+                                <div class="flex items-center mb-4">
+                                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                                        <i class="fas fa-cloud-upload-alt text-blue-600 text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-gray-900">SQL Server → Azure SQL</h3>
+                                        <p class="text-sm text-gray-500">Migruj dane do chmury Azure</p>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-3">
+                                    <button id="btn-test-azure-sql" class="btn btn-secondary w-full">
+                                        <i class="fas fa-plug mr-2"></i>
+                                        Testuj połączenie
+                                    </button>
+                                    <button id="btn-sync-azure-sql" class="btn btn-primary w-full">
+                                        <i class="fas fa-sync-alt mr-2"></i>
+                                        Synchronizuj dane
+                                    </button>
+                                    <button id="btn-clear-azure-sql" class="btn btn-danger w-full">
+                                        <i class="fas fa-trash-alt mr-2"></i>
+                                        Wyczyść Azure SQL
+                                    </button>
+                                </div>
+
+                                <div id="azure-sql-progress" class="hidden mt-4">
+                                    <div class="w-full bg-gray-200 rounded-full h-2.5 mb-2">
+                                        <div id="azure-sql-progress-bar" class="bg-blue-600 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                                    </div>
+                                    <p id="azure-sql-progress-text" class="text-sm text-gray-600 text-center">Oczekiwanie...</p>
+                                </div>
+
+                                <div id="azure-sql-status" class="hidden mt-4"></div>
+                            </div>
+
+                            
+                            <div class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+                                <div class="flex items-center mb-4">
+                                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
+                                        <i class="fas fa-cloud text-purple-600 text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-gray-900">MongoDB → Cosmos DB</h3>
+                                        <p class="text-sm text-gray-500">Migruj kolekcje do Cosmos DB</p>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-3">
+                                    <button id="btn-test-cosmos" class="btn btn-secondary w-full">
+                                        <i class="fas fa-plug mr-2"></i>
+                                        Testuj połączenie
+                                    </button>
+                                    <button id="btn-sync-cosmos" class="btn btn-primary w-full">
+                                        <i class="fas fa-sync-alt mr-2"></i>
+                                        Synchronizuj kolekcje
+                                    </button>
+                                    <button id="btn-clear-cosmos" class="btn btn-danger w-full">
+                                        <i class="fas fa-trash-alt mr-2"></i>
+                                        Wyczyść Cosmos DB
+                                    </button>
+                                </div>
+
+                                <div id="cosmos-progress" class="hidden mt-4">
+                                    <div class="w-full bg-gray-200 rounded-full h-2.5 mb-2">
+                                        <div id="cosmos-progress-bar" class="bg-purple-600 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                                    </div>
+                                    <p id="cosmos-progress-text" class="text-sm text-gray-600 text-center">Oczekiwanie...</p>
+                                </div>
+
+                                <div id="cosmos-status" class="hidden mt-4"></div>
+                            </div>
+                        </div>
+                    </section>
+
+                    
+                    <section id="management-section" class="mb-8">
+                        <div class="mb-6">
+                            <h2 class="text-2xl font-bold text-gray-900 mb-2">Zarządzanie Bazami Danych</h2>
+                            <p class="text-gray-600">Operacje na bazach danych, backup i czyszczenie</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            
+                            <div class="bg-white rounded-xl border border-gray-200 p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                                    <i class="fas fa-database text-blue-600 mr-2"></i>
+                                    SQL Server
+                                </h3>
+                                <div class="space-y-3">
+                                    <button class="btn btn-secondary w-full">
+                                        <i class="fas fa-heartbeat mr-2"></i>
+                                        Sprawdź status
+                                    </button>
+                                    <button class="btn btn-success w-full">
+                                        <i class="fas fa-save mr-2"></i>
+                                        Backup bazy
+                                    </button>
+                                    <button class="btn btn-warning w-full">
+                                        <i class="fas fa-broom mr-2"></i>
+                                        Wyczyść dane
+                                    </button>
+                                </div>
+                            </div>
+
+                            
+                            <div class="bg-white rounded-xl border border-gray-200 p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                                    <i class="fas fa-leaf text-green-600 mr-2"></i>
+                                    MongoDB
+                                </h3>
+                                <div class="space-y-3">
+                                    <button class="btn btn-secondary w-full">
+                                        <i class="fas fa-heartbeat mr-2"></i>
+                                        Sprawdź status
+                                    </button>
+                                    <button class="btn btn-success w-full">
+                                        <i class="fas fa-download mr-2"></i>
+                                        Export kolekcji
+                                    </button>
+                                    <button class="btn btn-warning w-full">
+                                        <i class="fas fa-broom mr-2"></i>
+                                        Wyczyść kolekcje
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    
+                    <section id="logs-section">
+                        <div class="mb-6">
+                            <h2 class="text-2xl font-bold text-gray-900 mb-2">Dziennik Aktywności</h2>
+                            <p class="text-gray-600">Historia operacji i zdarzeń systemowych</p>
+                        </div>
+
+                        <div class="bg-white rounded-xl border border-gray-200 p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-semibold text-gray-900">Ostatnie aktywności</h3>
+                                <button class="text-sm text-blue-600 hover:text-blue-700 font-medium">
+                                    <i class="fas fa-sync-alt mr-1"></i>
+                                    Odśwież
+                                </button>
+                            </div>
+
+                            <div id="activity-log" class="space-y-3 max-h-96 overflow-y-auto">
+                                
+                                <div class="flex items-start p-3 rounded-lg bg-gray-50">
+                                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3 flex-shrink-0">
+                                        <i class="fas fa-check text-green-600"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="font-medium text-gray-900">System uruchomiony</p>
+                                        <p class="text-sm text-gray-500 mt-1">Panel administracyjny gotowy do pracy</p>
+                                        <p class="text-xs text-gray-400 mt-1">Teraz</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Utility Functions
+        function showStatus(type, message, elementId) {
+            const statusEl = document.getElementById(elementId);
+            statusEl.className = `mt-4 p-3 rounded-lg text-sm ${
+                type === 'success' ? 'bg-green-50 text-green-800 border border-green-200' :
+                type === 'error' ? 'bg-red-50 text-red-800 border border-red-200' :
+                'bg-blue-50 text-blue-800 border border-blue-200'
+            }`;
+            statusEl.textContent = message;
+            statusEl.classList.remove('hidden');
+            
+            setTimeout(() => statusEl.classList.add('hidden'), 5000);
+        }
+
+        function updateProgress(barId, textId, percent, text) {
+            document.getElementById(barId).style.width = percent + '%';
+            document.getElementById(textId).textContent = text;
+        }
+
+        function addLog(icon, iconColor, title, message) {
+            const log = document.getElementById('activity-log');
+            const entry = document.createElement('div');
+            entry.className = 'flex items-start p-3 rounded-lg bg-gray-50 animate-fade-in';
+            entry.innerHTML = `
+                <div class="w-10 h-10 ${iconColor} rounded-lg flex items-center justify-center mr-3 flex-shrink-0">
+                    <i class="fas fa-${icon} ${iconColor.replace('bg-', 'text-').replace('-100', '-600')}"></i>
+                </div>
+                <div class="flex-1">
+                    <p class="font-medium text-gray-900">${title}</p>
+                    <p class="text-sm text-gray-500 mt-1">${message}</p>
+                    <p class="text-xs text-gray-400 mt-1">Teraz</p>
+                </div>
+            `;
+            log.insertBefore(entry, log.firstChild);
+        }
+
+        // Update KPI Cards
+        // Update database stats with status indicators
+        async function updateStats() {
+            try {
+                const response = await fetch('/api/admin/stats');
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    // Update record counts
+                    document.getElementById('sql-records').textContent = formatNumber(data.sql_records || 0);
+                    document.getElementById('mongo-records').textContent = formatNumber(data.mongo_records || 0);
+                    document.getElementById('azure-sql-records').textContent = formatNumber(data.azure_sql_records || 0);
+                    document.getElementById('cosmos-records').textContent = formatNumber(data.cosmos_records || 0);
+                    
+                    // Update status indicators
+                    updateStatusIndicator('sql-status-indicator', data.sql_status);
+                    updateStatusIndicator('mongo-status-indicator', data.mongo_status);
+                    updateStatusIndicator('azure-sql-status-indicator', data.azure_sql_status);
+                    updateStatusIndicator('cosmos-status-indicator', data.cosmos_status);
+                    
+                    // Update sidebar status dots
+                    updateSidebarStatus('sidebar-sql-status', data.sql_status);
+                    updateSidebarStatus('sidebar-mongo-status', data.mongo_status);
+                    updateSidebarStatus('sidebar-azure-status', data.azure_sql_status);
+                    updateSidebarStatus('sidebar-cosmos-status', data.cosmos_status);
+                }
+            } catch (error) {
+                console.error('Error updating stats:', error);
+                // Set all to disconnected on error
+                ['sql', 'mongo', 'azure-sql', 'cosmos'].forEach(db => {
+                    updateStatusIndicator(`${db}-status-indicator`, 'disconnected');
+                });
+                // Update sidebar dots
+                ['sql', 'mongo', 'azure', 'cosmos'].forEach(db => {
+                    updateSidebarStatus(`sidebar-${db}-status`, 'disconnected');
+                });
+            }
+        }
+
+        function updateSidebarStatus(elementId, status) {
+            const dot = document.getElementById(elementId);
+            if (!dot) return;
+            
+            dot.className = 'status-dot-small';
+            if (status === 'connected') {
+                dot.classList.add('connected');
+            } else if (status === 'error') {
+                dot.classList.add('error');
+            } else {
+                dot.classList.add('disconnected');
+            }
+        }
+
+        function formatNumber(num) {
+            return new Intl.NumberFormat('pl-PL').format(num);
+        }
+
+        function updateStatusIndicator(elementId, status) {
+            const indicator = document.getElementById(elementId);
+            if (!indicator) return;
+            
+            // Remove all status classes
+            indicator.classList.remove('connected', 'disconnected', 'error');
+            
+            // Add appropriate status class
+            if (status === 'connected') {
+                indicator.classList.add('connected');
+                indicator.querySelector('.status-text').textContent = 'Połączono';
+            } else if (status === 'error') {
+                indicator.classList.add('error');
+                indicator.querySelector('.status-text').textContent = 'Błąd';
+            } else {
+                indicator.classList.add('disconnected');
+                indicator.querySelector('.status-text').textContent = 'Rozłączono';
+            }
+        }
+
+        // Generate SQL Data
+        document.getElementById('btn-generate-sql').addEventListener('click', async function() {
+            const btn = this;
+            const records = 1000; // Stala liczba zamowien
+            const progress = document.getElementById('sql-progress');
+            
+            btn.disabled = true;
+            btn.classList.add('opacity-50');
+            progress.classList.remove('hidden');
+            updateProgress('sql-progress-bar', 'sql-progress-text', 0, 'Rozpoczynam generowanie...');
+
+            try {
+                updateProgress('sql-progress-bar', 'sql-progress-text', 30, 'Generowanie danych SQL...');
+                
+                const response = await fetch('/api/admin/generate-sql', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ records: parseInt(records) })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    updateProgress('sql-progress-bar', 'sql-progress-text', 100, 'Zakończono!');
+                    showStatus('success', data.message || `Wygenerowano ${records} zamówień (+ produkty, kategorie, klienci)`, 'sql-status');
+                    addLog('check', 'bg-green-100', 'Dane SQL wygenerowane', `Utworzono ${records} zamówień`);
+                } else {
+                    throw new Error(data.error || 'Błąd generowania');
+                }
+            } catch (error) {
+                updateProgress('sql-progress-bar', 'sql-progress-text', 0, 'Błąd!');
+                showStatus('error', 'Błąd: ' + error.message, 'sql-status');
+                addLog('times', 'bg-red-100', 'Błąd generowania SQL', error.message);
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50');
+                setTimeout(() => progress.classList.add('hidden'), 2000);
+            }
+        });
+
+        // Load SQL Data
+        document.getElementById('btn-load-sql').addEventListener('click', async function() {
+            const btn = this;
+            const progress = document.getElementById('sql-progress');
+            
+            btn.disabled = true;
+            btn.classList.add('opacity-50');
+            progress.classList.remove('hidden');
+            updateProgress('sql-progress-bar', 'sql-progress-text', 0, 'Rozpoczynam ładowanie...');
+
+            try {
+                updateProgress('sql-progress-bar', 'sql-progress-text', 50, 'Ładowanie do SQL Server...');
+                
+                const response = await fetch('/api/admin/load-sql', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    updateProgress('sql-progress-bar', 'sql-progress-text', 100, 'Zakończono!');
+                    showStatus('success', data.message || 'Dane załadowane do SQL Server', 'sql-status');
+                    addLog('database', 'bg-blue-100', 'Dane SQL załadowane', 'Pomyślnie dodano do bazy');
+                    updateStats();
+                } else {
+                    throw new Error(data.error || 'Błąd ładowania');
+                }
+            } catch (error) {
+                updateProgress('sql-progress-bar', 'sql-progress-text', 0, 'Błąd!');
+                showStatus('error', 'Błąd: ' + error.message, 'sql-status');
+                addLog('times', 'bg-red-100', 'Błąd ładowania SQL', error.message);
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50');
+                setTimeout(() => progress.classList.add('hidden'), 2000);
+            }
+        });
+
+        // Generate MongoDB Data
+        document.getElementById('btn-generate-mongo').addEventListener('click', async function() {
+            const btn = this;
+            const progress = document.getElementById('mongo-progress');
+            
+            btn.disabled = true;
+            btn.classList.add('opacity-50');
+            progress.classList.remove('hidden');
+            updateProgress('mongo-progress-bar', 'mongo-progress-text', 0, 'Rozpoczynam generowanie...');
+
+            try {
+                updateProgress('mongo-progress-bar', 'mongo-progress-text', 30, 'Generowanie danych MongoDB...');
+                
+                const response = await fetch('/api/admin/generate-mongo', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({})
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    updateProgress('mongo-progress-bar', 'mongo-progress-text', 100, 'Zakończono!');
+                    showStatus('success', data.message || 'Dane MongoDB wygenerowane pomyślnie', 'mongo-status');
+                    addLog('check', 'bg-green-100', 'Dane MongoDB wygenerowane', 'Dokumenty utworzone');
+                } else {
+                    throw new Error(data.error || 'Błąd generowania');
+                }
+            } catch (error) {
+                updateProgress('mongo-progress-bar', 'mongo-progress-text', 0, 'Błąd!');
+                showStatus('error', 'Błąd: ' + error.message, 'mongo-status');
+                addLog('times', 'bg-red-100', 'Błąd generowania MongoDB', error.message);
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50');
+                setTimeout(() => progress.classList.add('hidden'), 2000);
+            }
+        });
+
+        // Load MongoDB Data
+        document.getElementById('btn-load-mongo').addEventListener('click', async function() {
+            const btn = this;
+            const progress = document.getElementById('mongo-progress');
+            
+            btn.disabled = true;
+            btn.classList.add('opacity-50');
+            progress.classList.remove('hidden');
+            updateProgress('mongo-progress-bar', 'mongo-progress-text', 0, 'Rozpoczynam ładowanie...');
+
+            try {
+                updateProgress('mongo-progress-bar', 'mongo-progress-text', 50, 'Ładowanie do MongoDB...');
+                
+                const response = await fetch('/api/admin/load-mongo', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    updateProgress('mongo-progress-bar', 'mongo-progress-text', 100, 'Zakończono!');
+                    showStatus('success', data.message || 'Dane załadowane do MongoDB', 'mongo-status');
+                    addLog('leaf', 'bg-green-100', 'Dane MongoDB załadowane', 'Pomyślnie dodano do kolekcji');
+                    updateStats();
+                } else {
+                    throw new Error(data.error || 'Błąd ładowania');
+                }
+            } catch (error) {
+                updateProgress('mongo-progress-bar', 'mongo-progress-text', 0, 'Błąd!');
+                showStatus('error', 'Błąd: ' + error.message, 'mongo-status');
+                addLog('times', 'bg-red-100', 'Błąd ładowania MongoDB', error.message);
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50');
+                setTimeout(() => progress.classList.add('hidden'), 2000);
+            }
+        });
+
+        // Generate All
+        document.getElementById('btn-generate-all').addEventListener('click', async function() {
+            if (!confirm('Czy na pewno chcesz wygenerować i załadować wszystkie dane? To może potrwać kilka minut.')) {
+                return;
+            }
+
+            const btn = this;
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.classList.add('opacity-50');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Przetwarzanie...';
+
+            try {
+                addLog('bolt', 'bg-yellow-100', 'Rozpoczęto pełną synchronizację', 'Generowanie wszystkich danych');
+                
+                document.getElementById('btn-generate-sql').click();
+                await new Promise(resolve => setTimeout(resolve, 3000));
+                document.getElementById('btn-load-sql').click();
+                await new Promise(resolve => setTimeout(resolve, 5000));
+                document.getElementById('btn-generate-mongo').click();
+                await new Promise(resolve => setTimeout(resolve, 3000));
+                document.getElementById('btn-load-mongo').click();
+                
+                await new Promise(resolve => setTimeout(resolve, 5000));
+                addLog('check-circle', 'bg-green-100', 'Pełna synchronizacja zakończona', 'Wszystkie dane zostały wygenerowane i załadowane');
+            } finally {
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-50');
+                    btn.innerHTML = originalText;
+                }, 8000);
+            }
+        });
+
+        // Azure SQL Sync
+        document.getElementById('btn-test-azure-sql').addEventListener('click', async function() {
+            const btn = this;
+            btn.disabled = true;
+            btn.classList.add('opacity-50');
+            
+            try {
+                const response = await fetch('/api/admin/test-azure-sql');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showStatus('success', 'Połączenie z Azure SQL OK', 'azure-sql-status');
+                    addLog('check', 'bg-green-100', 'Test połączenia Azure SQL', 'Połączenie pomyślne');
+                } else {
+                    throw new Error(data.error || 'Błąd połączenia');
+                }
+            } catch (error) {
+                showStatus('error', 'Błąd: ' + error.message, 'azure-sql-status');
+                addLog('times', 'bg-red-100', 'Błąd połączenia Azure SQL', error.message);
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50');
+            }
+        });
+
+        document.getElementById('btn-sync-azure-sql').addEventListener('click', async function() {
+            if (!confirm('Czy na pewno chcesz zsynchronizować dane do Azure SQL Database?')) return;
+            
+            const btn = this;
+            const progress = document.getElementById('azure-sql-progress');
+            
+            btn.disabled = true;
+            btn.classList.add('opacity-50');
+            progress.classList.remove('hidden');
+            updateProgress('azure-sql-progress-bar', 'azure-sql-progress-text', 0, 'Rozpoczynam synchronizację...');
+
+            try {
+                updateProgress('azure-sql-progress-bar', 'azure-sql-progress-text', 50, 'Synchronizacja do Azure SQL...');
+                
+                const response = await fetch('/api/admin/sync-azure-sql', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    updateProgress('azure-sql-progress-bar', 'azure-sql-progress-text', 100, 'Zakończono!');
+                    showStatus('success', data.message || 'Dane zsynchronizowane do Azure SQL', 'azure-sql-status');
+                    addLog('cloud-upload-alt', 'bg-blue-100', 'Synchronizacja Azure SQL', 'Dane pomyślnie przesłane');
+                    updateStats();
+                } else {
+                    throw new Error(data.error || 'Błąd synchronizacji');
+                }
+            } catch (error) {
+                updateProgress('azure-sql-progress-bar', 'azure-sql-progress-text', 0, 'Błąd!');
+                showStatus('error', 'Błąd: ' + error.message, 'azure-sql-status');
+                addLog('times', 'bg-red-100', 'Błąd synchronizacji Azure SQL', error.message);
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50');
+                setTimeout(() => progress.classList.add('hidden'), 2000);
+            }
+        });
+
+        // Cosmos DB Sync
+        document.getElementById('btn-test-cosmos').addEventListener('click', async function() {
+            const btn = this;
+            btn.disabled = true;
+            btn.classList.add('opacity-50');
+            
+            try {
+                const response = await fetch('/api/admin/test-cosmos');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showStatus('success', 'Połączenie z Cosmos DB OK', 'cosmos-status');
+                    addLog('check', 'bg-green-100', 'Test połączenia Cosmos DB', 'Połączenie pomyślne');
+                } else {
+                    throw new Error(data.error || 'Błąd połączenia');
+                }
+            } catch (error) {
+                showStatus('error', 'Błąd: ' + error.message, 'cosmos-status');
+                addLog('times', 'bg-red-100', 'Błąd połączenia Cosmos DB', error.message);
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50');
+            }
+        });
+
+        document.getElementById('btn-sync-cosmos').addEventListener('click', async function() {
+            if (!confirm('Czy na pewno chcesz zsynchronizować kolekcje do Cosmos DB?')) return;
+            
+            const btn = this;
+            const progress = document.getElementById('cosmos-progress');
+            
+            btn.disabled = true;
+            btn.classList.add('opacity-50');
+            progress.classList.remove('hidden');
+            updateProgress('cosmos-progress-bar', 'cosmos-progress-text', 0, 'Rozpoczynam synchronizację...');
+
+            try {
+                updateProgress('cosmos-progress-bar', 'cosmos-progress-text', 50, 'Synchronizacja do Cosmos DB...');
+                
+                const response = await fetch('/api/admin/sync-cosmos', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    updateProgress('cosmos-progress-bar', 'cosmos-progress-text', 100, 'Zakończono!');
+                    showStatus('success', data.message || 'Kolekcje zsynchronizowane do Cosmos DB', 'cosmos-status');
+                    addLog('cloud', 'bg-purple-100', 'Synchronizacja Cosmos DB', 'Kolekcje pomyślnie przesłane');
+                    updateStats();
+                } else {
+                    throw new Error(data.error || 'Błąd synchronizacji');
+                }
+            } catch (error) {
+                updateProgress('cosmos-progress-bar', 'cosmos-progress-text', 0, 'Błąd!');
+                showStatus('error', 'Błąd: ' + error.message, 'cosmos-status');
+                addLog('times', 'bg-red-100', 'Błąd synchronizacji Cosmos DB', error.message);
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50');
+                setTimeout(() => progress.classList.add('hidden'), 2000);
+            }
+        });
+
+        // Czyszczenie Azure SQL
+        document.getElementById('btn-clear-azure-sql').addEventListener('click', async function() {
+            if (!confirm('⚠️ OSTRZEŻENIE: Ta operacja usunie WSZYSTKIE dane z Azure SQL!\n\nCzy na pewno chcesz kontynuować?')) {
+                return; // Anulowano
+            }
+
+            const btn = this;
+            const progress = document.getElementById('azure-sql-progress');
+            
+            try {
+                btn.disabled = true;
+                btn.classList.add('opacity-50');
+                progress.classList.remove('hidden');
+                updateProgress('azure-sql-progress-bar', 'azure-sql-progress-text', 30, 'Czyszczenie Azure SQL...');
+                
+                const response = await fetch('/api/admin/clear-azure-sql', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    updateProgress('azure-sql-progress-bar', 'azure-sql-progress-text', 100, 'Zakończono!');
+                    showStatus('success', data.message || 'Azure SQL wyczyszczony', 'azure-sql-status');
+                    addLog('trash-alt', 'bg-red-100', 'Czyszczenie Azure SQL', data.message);
+                    updateStats();
+                } else {
+                    throw new Error(data.error || 'Błąd czyszczenia');
+                }
+            } catch (error) {
+                updateProgress('azure-sql-progress-bar', 'azure-sql-progress-text', 0, 'Błąd!');
+                showStatus('error', 'Błąd: ' + error.message, 'azure-sql-status');
+                addLog('times', 'bg-red-100', 'Błąd czyszczenia Azure SQL', error.message);
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50');
+                setTimeout(() => progress.classList.add('hidden'), 2000);
+            }
+        });
+
+        // Czyszczenie Cosmos DB
+        document.getElementById('btn-clear-cosmos').addEventListener('click', async function() {
+            if (!confirm('⚠️ OSTRZEŻENIE: Ta operacja usunie WSZYSTKIE dokumenty z Cosmos DB!\n\nCzy na pewno chcesz kontynuować?')) {
+                return; // Anulowano
+            }
+
+            const btn = this;
+            const progress = document.getElementById('cosmos-progress');
+            
+            try {
+                btn.disabled = true;
+                btn.classList.add('opacity-50');
+                progress.classList.remove('hidden');
+                updateProgress('cosmos-progress-bar', 'cosmos-progress-text', 30, 'Czyszczenie Cosmos DB...');
+                
+                const response = await fetch('/api/admin/clear-cosmos', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    updateProgress('cosmos-progress-bar', 'cosmos-progress-text', 100, 'Zakończono!');
+                    showStatus('success', data.message || 'Cosmos DB wyczyszczony', 'cosmos-status');
+                    addLog('trash-alt', 'bg-red-100', 'Czyszczenie Cosmos DB', data.message);
+                    updateStats();
+                } else {
+                    throw new Error(data.error || 'Błąd czyszczenia');
+                }
+            } catch (error) {
+                updateProgress('cosmos-progress-bar', 'cosmos-progress-text', 0, 'Błąd!');
+                showStatus('error', 'Błąd: ' + error.message, 'cosmos-status');
+                addLog('times', 'bg-red-100', 'Błąd czyszczenia Cosmos DB', error.message);
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50');
+                setTimeout(() => progress.classList.add('hidden'), 2000);
+            }
+        });
+
+        // Initialize - Update stats on page load
+        updateStats();
+        setInterval(updateStats, 30000); // Update every 30 seconds
+    </script>
+</body>
+</html>
+
+                                        </div>
+                                    </div>
+                                    <span class="text-sm text-gray-500">1000 rekordów</span>
+                                </div>
+                                <div class="flex items-center justify-between py-3 border-b border-gray-100">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-database text-blue-600"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-900">Połączenie z MongoDB</p>
+                                            <p class="text-sm text-gray-500">15 minut temu</p>
+                                        </div>
+                                    </div>
+                                    <span class="text-sm text-green-600 font-medium">Sukces</span>
+                                </div>
+                                <div class="flex items-center justify-between py-3">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-user text-purple-600"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-900">Logowanie administratora</p>
+                                            <p class="text-sm text-gray-500">30 minut temu</p>
+                                        </div>
+                                    </div>
+                                    <span class="text-sm text-green-600 font-medium">Sukces</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    
+                    <div id="settings" class="tab-content hidden">
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2">Ustawienia Systemu</h3>
+                            <p class="text-gray-600">Konfiguracja połączeń i parametrów systemu</p>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            
+                            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                                <h4 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                                    <i class="fas fa-database text-blue-600 mr-2"></i>
+                                    Połączenie SQL Server
+                                </h4>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Server</label>
+                                        <input type="text" value="localhost" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" disabled>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Database</label>
+                                        <input type="text" value="SalesDB" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" disabled>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                                        <div class="flex items-center space-x-2">
+                                            <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                                            <span class="text-sm text-green-700 font-medium">Połączony</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            
+                            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                                <h4 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                                    <i class="fas fa-leaf text-green-600 mr-2"></i>
+                                    Połączenie MongoDB
+                                </h4>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Host</label>
+                                        <input type="text" value="localhost:27017" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500" disabled>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Database</label>
+                                        <input type="text" value="SalesDB" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500" disabled>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                                        <div class="flex items-center space-x-2">
+                                            <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                                            <span class="text-sm text-green-700 font-medium">Połączony</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6 bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded">
+                            <div class="flex">
+                                <i class="fas fa-exclamation-triangle text-yellow-600 mt-1 mr-3"></i>
+                                <div>
+                                    <p class="text-sm text-yellow-800 font-medium">Uwaga!</p>
+                                    <p class="text-sm text-yellow-700 mt-1">
+                                        Zmiany w ustawieniach połączeń wymagają restartu serwera. Upewnij się, że masz dostęp do konserwacji systemu.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab Management
+        document.querySelectorAll('.admin-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                const targetTab = this.dataset.tab;
+                
+                // Update tab buttons
+                document.querySelectorAll('.admin-tab').forEach(t => {
+                    t.classList.remove('active', 'border-blue-600', 'text-blue-600');
+                    t.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+                });
+                this.classList.add('active', 'border-blue-600', 'text-blue-600');
+                this.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+                
+                // Update tab content
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.add('hidden');
+                    content.classList.remove('active');
+                });
+                document.getElementById(targetTab).classList.remove('hidden');
+                document.getElementById(targetTab).classList.add('active');
+            });
+        });
+        
+        // Initialize first tab as active
+        document.querySelector('.admin-tab').classList.add('border-blue-600', 'text-blue-600');
+        
+        // Update uptime
+        function updateUptime() {
+            const uptime = document.getElementById('uptime');
+            if (uptime) {
+                const hours = Math.floor(Math.random() * 48) + 1;
+                uptime.textContent = `${hours}h`;
+            }
+        }
+        updateUptime();
+        setInterval(updateUptime, 60000);
+        
+        function showStatus(type, message, elementId) {
+            const status = document.getElementById(elementId);
+            status.className = 'block mt-4 p-3 rounded-lg text-sm';
+            
+            if (type === 'success') {
+                status.classList.add('bg-green-50', 'text-green-800', 'border', 'border-green-200');
+            } else if (type === 'error') {
+                status.classList.add('bg-red-50', 'text-red-800', 'border', 'border-red-200');
+            } else {
+                status.classList.add('bg-blue-50', 'text-blue-800', 'border', 'border-blue-200');
+            }
+            
+            status.textContent = message;
+        }
+
+        // SQL Generator
+        document.getElementById('btn-generate-sql').addEventListener('click', async function() {
+            const btn = this;
+            const records = document.getElementById('sql-records').value;
+            const progress = document.getElementById('sql-progress');
+            const progressFill = document.getElementById('sql-progress-fill');
+            const progressText = document.getElementById('sql-progress-text');
+
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+            progress.classList.remove('hidden');
+            progressFill.style.width = '0%';
+            progressText.textContent = 'Rozpoczynam generowanie...';
+
+            try {
+                progressFill.style.width = '30%';
+                progressText.textContent = 'Generowanie danych SQL...';
+
+                const response = await fetch('/api/admin/generate-sql', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ records: parseInt(records) })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    progressFill.style.width = '100%';
+                    progressText.textContent = 'Zakończono!';
+                    showStatus('success', data.message || 'Dane SQL zostały wygenerowane pomyślnie!', 'sql-status');
+                } else {
+                    throw new Error(data.error || 'Błąd generowania');
+                }
+            } catch (error) {
+                progressFill.style.width = '0%';
+                progressText.textContent = 'Błąd!';
+                showStatus('error', 'Błąd: ' + error.message, 'sql-status');
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                setTimeout(() => progress.classList.add('hidden'), 2000);
+            }
+        });
+
+        // SQL Loader
+        document.getElementById('btn-load-sql').addEventListener('click', async function() {
+            if (!confirm('Czy na pewno chcesz załadować dane do SQL Server? To może potrwać kilka minut.')) {
+                return;
+            }
+
+            const btn = this;
+            const progress = document.getElementById('sql-progress');
+            const progressFill = document.getElementById('sql-progress-fill');
+            const progressText = document.getElementById('sql-progress-text');
+
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+            progress.classList.remove('hidden');
+            progressFill.style.width = '0%';
+            progressText.textContent = 'Rozpoczynam ładowanie...';
+
+            try {
+                progressFill.style.width = '30%';
+                progressText.textContent = 'Ładowanie danych do SQL Server...';
+
+                const response = await fetch('/api/admin/load-sql', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    progressFill.style.width = '100%';
+                    progressText.textContent = 'Zakończono!';
+                    showStatus('success', data.message || 'Dane zostały załadowane do SQL Server!', 'sql-status');
+                } else {
+                    throw new Error(data.error || 'Błąd ładowania');
+                }
+            } catch (error) {
+                progressFill.style.width = '0%';
+                progressText.textContent = 'Błąd!';
+                showStatus('error', 'Błąd: ' + error.message, 'sql-status');
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                setTimeout(() => progress.classList.add('hidden'), 2000);
+            }
+        });
+
+        // MongoDB Loader
+        document.getElementById('btn-load-mongo').addEventListener('click', async function() {
+            if (!confirm('Czy na pewno chcesz załadować dane do MongoDB? To może potrwać kilka minut.')) {
+                return;
+            }
+
+            const btn = this;
+            const progress = document.getElementById('mongo-progress');
+            const progressFill = document.getElementById('mongo-progress-bar');
+            const progressText = document.getElementById('mongo-progress-text');
+
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+            progress.classList.remove('hidden');
+            progressFill.style.width = '0%';
+            progressText.textContent = 'Rozpoczynam ładowanie...';
+
+            try {
+                progressFill.style.width = '30%';
+                progressText.textContent = 'Ładowanie danych do MongoDB...';
+
+                const response = await fetch('/api/admin/load-mongo', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    progressFill.style.width = '100%';
+                    progressText.textContent = 'Zakończono!';
+                    showStatus('success', data.message || 'Dane zostały załadowane do MongoDB!', 'mongo-status');
+                } else {
+                    throw new Error(data.error || 'Błąd ładowania');
+                }
+            } catch (error) {
+                progressFill.style.width = '0%';
+                progressText.textContent = 'Błąd!';
+                showStatus('error', 'Błąd: ' + error.message, 'mongo-status');
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                setTimeout(() => progress.classList.add('hidden'), 2000);
+            }
+        });
+        
+        // === System Uwierzytelniania ===
+        
+        // Sprawdź czy użytkownik jest zalogowany
+        async function checkAuth() {
+            try {
+                const response = await fetch('/api/auth/current-user');
+                const data = await response.json();
+                
+                if (data.authenticated) {
+                    // Wyświetl informacje o użytkowniku
+                    document.getElementById('currentUsername').textContent = data.user.username;
+                    document.getElementById('currentUserRole').textContent = data.user.role.toUpperCase();
+                    document.getElementById('userInfo').classList.remove('hidden');
+                    document.getElementById('userInfo').classList.add('flex');
+                    document.getElementById('logoutBtn').style.display = 'inline-flex';
+                    
+                    // Sprawdź czy ma uprawnienia admina
+                    if (data.user.role !== 'admin') {
+                        // Nie ma uprawnień - przekieruj do dashboard
+                        window.location.href = '/dashboard.html';
+                    }
+                } else {
+                    // Nie zalogowany - przekieruj do logowania
+                    window.location.href = '/login.html';
+                }
+            } catch (error) {
+                console.error('Auth check error:', error);
+                // W razie błędu nie blokuj dostępu (może być wyłączone uwierzytelnianie)
+            }
+        }
+        
+        // Funkcja wylogowania
+        async function logout() {
+            try {
+                await fetch('/api/auth/logout', { method: 'POST' });
+                window.location.href = '/login.html';
+            } catch (error) {
+                console.error('Logout error:', error);
+                window.location.href = '/login.html';
+            }
+        }
+        
+        // Sprawdź uwierzytelnienie przy ładowaniu strony
+        checkAuth();
+    </script>
+</body>
+</html>

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wizualizacje Power BI - GlobalVista</title>
+    <link rel="stylesheet" href="tailwind.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="powerbi.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-chart-line"></i>
+                <span>GlobalVista Analytics</span>
+            </div>
+            <nav class="nav-menu">
+                <a href="dashboard.html" class="nav-link">
+                    <i class="fas fa-home"></i>
+                    Dashboard
+                </a>
+                <a href="admin.html" class="nav-link">
+                    <i class="fas fa-cog"></i>
+                    Panel Administracyjny
+                </a>
+                <a href="powerbi.html" class="nav-link active">
+                    <i class="fas fa-chart-bar"></i>
+                    Power BI
+                </a>
+            </nav>
+            <div class="user-info">
+                <span id="username">Użytkownik</span>
+                <button onclick="logout()" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Wyloguj
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div style="display: flex; gap: 2rem; align-items: flex-start;">
+            <!-- Left Sidebar - Controls (outside white container) -->
+            <div class="gallery-controls">
+                <button class="control-btn prev-btn" onclick="previousSlide()">
+                    <i class="fas fa-chevron-up"></i>
+                    Poprzedni
+                </button>
+                
+                <div class="slide-indicators">
+                    <div class="indicator-item active" onclick="goToSlide(0)" data-name="Dashboard">
+                        <span class="indicator-dot"></span>
+                        <span class="indicator-text">Dashboard</span>
+                    </div>
+                    <div class="indicator-item" onclick="goToSlide(1)" data-name="Analiza detaliczna">
+                        <span class="indicator-dot"></span>
+                        <span class="indicator-text">Analiza detaliczna</span>
+                    </div>
+                    <div class="indicator-item" onclick="goToSlide(2)" data-name="Operacje Bankowe">
+                        <span class="indicator-dot"></span>
+                        <span class="indicator-text">Operacje Bankowe</span>
+                    </div>
+                    <div class="indicator-item" onclick="goToSlide(3)" data-name="Strategia i Prognozy">
+                        <span class="indicator-dot"></span>
+                        <span class="indicator-text">Strategia i Prognozy</span>
+                    </div>
+                    <div class="indicator-item" onclick="goToSlide(4)" data-name="Prognozy - Szczegóły">
+                        <span class="indicator-dot"></span>
+                        <span class="indicator-text">Prognozy - Szczegóły</span>
+                    </div>
+                </div>
+
+                <button class="control-btn next-btn" onclick="nextSlide()">
+                    Następny
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                
+                <!-- Slide Counter -->
+                <div class="slide-counter">
+                    <span id="currentSlide">1</span> / <span id="totalSlides">5</span>
+                </div>
+            </div>
+
+            <!-- Right Side - White Container with Gallery -->
+            <div class="powerbi-container" style="flex: 1;">
+                <div class="powerbi-header">
+                    <h1>
+                        <i class="fas fa-chart-bar"></i>
+                        Wizualizacje Power BI
+                    </h1>
+                </div>
+
+                <!-- Screenshot Gallery -->
+                <div class="screenshot-gallery">
+                <div class="screenshot-wrapper active" data-slide="0">
+                    <div class="screenshot-card">
+                        <div class="screenshot-title">Dashboard</div>
+                        <img src="data_files/dashboard.png" alt="Power BI Dashboard" class="screenshot-img">
+                    </div>
+                </div>
+
+                <div class="screenshot-wrapper" data-slide="1">
+                    <div class="screenshot-card">
+                        <div class="screenshot-title">Analiza detaliczna</div>
+                        <img src="data_files/Analiza_detaliczna.png" alt="Power BI Analiza detaliczna" class="screenshot-img">
+                    </div>
+                </div>
+
+                <div class="screenshot-wrapper" data-slide="2">
+                    <div class="screenshot-card">
+                        <div class="screenshot-title">Operacje Bankowe</div>
+                        <img src="data_files/Operacje_Bankowe.png" alt="Power BI Operacje Bankowe" class="screenshot-img">
+                    </div>
+                </div>
+
+                <div class="screenshot-wrapper" data-slide="3">
+                    <div class="screenshot-card">
+                        <div class="screenshot-title">Strategia i Prognozy</div>
+                        <img src="data_files/strategia_i_prognozy.png" alt="Power BI Strategia i Prognozy" class="screenshot-img">
+                    </div>
+                </div>
+
+                <div class="screenshot-wrapper" data-slide="4">
+                    <div class="screenshot-card">
+                        <div class="screenshot-title">Strategia i Prognozy - Szczegóły</div>
+                        <img src="data_files/strategia_i_prognozy-szczegoly.png" alt="Power BI Strategia i Prognozy Szczegóły" class="screenshot-img">
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 GlobalVista Analytics. Wszystkie prawa zastrzeżone.</p>
+    </footer>
+
+    <script>
+        let currentSlide = 0;
+        const totalSlides = 5;
+
+        function updateSlideDisplay() {
+            // Hide all slides
+            document.querySelectorAll('.screenshot-wrapper').forEach(wrapper => {
+                wrapper.classList.remove('active');
+            });
+
+            // Show current slide
+            const currentWrapper = document.querySelector(`.screenshot-wrapper[data-slide="${currentSlide}"]`);
+            if (currentWrapper) {
+                currentWrapper.classList.add('active');
+            }
+
+            // Update indicators
+            document.querySelectorAll('.indicator-item').forEach((indicator, index) => {
+                if (index === currentSlide) {
+                    indicator.classList.add('active');
+                } else {
+                    indicator.classList.remove('active');
+                }
+            });
+
+            // Update counter
+            document.getElementById('currentSlide').textContent = currentSlide + 1;
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            updateSlideDisplay();
+        }
+
+        function previousSlide() {
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            updateSlideDisplay();
+        }
+
+        function goToSlide(slideNumber) {
+            currentSlide = slideNumber;
+            updateSlideDisplay();
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                previousSlide();
+            } else if (e.key === 'ArrowRight') {
+                nextSlide();
+            }
+        });
+
+        // Logout function
+        function logout() {
+            // Clear session
+            sessionStorage.clear();
+            localStorage.clear();
+            // Redirect to login
+            window.location.href = 'login.html';
+        }
+
+        // Load username from session
+        window.addEventListener('DOMContentLoaded', () => {
+            const username = sessionStorage.getItem('username') || 'Użytkownik';
+            document.getElementById('username').textContent = username;
+        });
+    </script>
+</body>
+</html>

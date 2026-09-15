@@ -1,0 +1,55 @@
+
+# Zmienne środowiskowe
+.env
+.env.*
+!.env.example
+
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+.venv/
+venv/
+ENV/
+.Python
+
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.settings/
+
+# System operacyjny
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Dane generowane runtime
+src/web/data_files/*.json
+sales_data/
+nosql_data/
+*.log
+
+# Duże pliki binarne
+*.pbix
+!power_bi/*.pbix
+
+# Inne
+*.bak
+*.tmp
+*.temp
+node_modules/
+

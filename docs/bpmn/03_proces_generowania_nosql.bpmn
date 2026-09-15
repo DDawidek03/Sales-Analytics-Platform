@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_3" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="Process_NoSQLGeneration" name="Proces Generowania Danych NoSQL" isExecutable="false">
+    <bpmn:startEvent id="StartEvent_NoSQL" name="Start generowania NoSQL">
+      <bpmn:outgoing>Flow_N1</bpmn:outgoing>
+    </bpmn:startEvent>
+    
+    <bpmn:task id="Task_CheckCSVFiles" name="Sprawdzenie dostępności plików CSV">
+      <bpmn:incoming>Flow_N1</bpmn:incoming>
+      <bpmn:outgoing>Flow_N2</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:exclusiveGateway id="Gateway_CSVExists" name="Pliki CSV istnieją?">
+      <bpmn:incoming>Flow_N2</bpmn:incoming>
+      <bpmn:outgoing>Flow_CSVExists</bpmn:outgoing>
+      <bpmn:outgoing>Flow_CSVMissing</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    
+    <bpmn:task id="Task_ShowCSVError" name="Wyświetl błąd braku danych">
+      <bpmn:incoming>Flow_CSVMissing</bpmn:incoming>
+      <bpmn:outgoing>Flow_ToEnd_Error</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:endEvent id="EndEvent_Error" name="Zakończenie z błędem">
+      <bpmn:incoming>Flow_ToEnd_Error</bpmn:incoming>
+    </bpmn:endEvent>
+    
+    <bpmn:task id="Task_LoadCSVData" name="Wczytanie danych CSV do pandas">
+      <bpmn:incoming>Flow_CSVExists</bpmn:incoming>
+      <bpmn:outgoing>Flow_N3</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:task id="Task_ValidateRelations" name="Walidacja relacji między danymi">
+      <bpmn:incoming>Flow_N3</bpmn:incoming>
+      <bpmn:outgoing>Flow_N4</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:task id="Task_CreateSellerProfiles" name="Utworzenie kolekcji SellerProfiles (denormalizacja)">
+      <bpmn:incoming>Flow_N4</bpmn:incoming>
+      <bpmn:outgoing>Flow_N5</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:task id="Task_CreatePurchaseHistories" name="Utworzenie kolekcji PurchaseHistories (agregacja)">
+      <bpmn:incoming>Flow_N5</bpmn:incoming>
+      <bpmn:outgoing>Flow_N6</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:task id="Task_CreateBankTransactions" name="Utworzenie kolekcji BankTransactionLogs">
+      <bpmn:incoming>Flow_N6</bpmn:incoming>
+      <bpmn:outgoing>Flow_N7</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:task id="Task_CreateCustomerBehavior" name="Utworzenie kolekcji CustomerBehavior">
+      <bpmn:incoming>Flow_N7</bpmn:incoming>
+      <bpmn:outgoing>Flow_N8</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:task id="Task_SaveJSON" name="Zapis kolekcji do plików JSON">
+      <bpmn:incoming>Flow_N8</bpmn:incoming>
+      <bpmn:outgoing>Flow_N9</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:task id="Task_GenerateNoSQLStats" name="Generowanie statystyk dokumentów">
+      <bpmn:incoming>Flow_N9</bpmn:incoming>
+      <bpmn:outgoing>Flow_N10</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:task id="Task_DisplayNoSQLSummary" name="Wyświetlenie podsumowania">
+      <bpmn:incoming>Flow_N10</bpmn:incoming>
+      <bpmn:outgoing>Flow_N11</bpmn:outgoing>
+    </bpmn:task>
+    
+    <bpmn:endEvent id="EndEvent_NoSQL" name="Pliki JSON wygenerowane">
+      <bpmn:incoming>Flow_N11</bpmn:incoming>
+    </bpmn:endEvent>
+    
+    <bpmn:sequenceFlow id="Flow_N1" sourceRef="StartEvent_NoSQL" targetRef="Task_CheckCSVFiles" />
+    <bpmn:sequenceFlow id="Flow_N2" sourceRef="Task_CheckCSVFiles" targetRef="Gateway_CSVExists" />
+    <bpmn:sequenceFlow id="Flow_CSVExists" name="Tak" sourceRef="Gateway_CSVExists" targetRef="Task_LoadCSVData" />
+    <bpmn:sequenceFlow id="Flow_CSVMissing" name="Nie" sourceRef="Gateway_CSVExists" targetRef="Task_ShowCSVError" />
+    <bpmn:sequenceFlow id="Flow_ToEnd_Error" sourceRef="Task_ShowCSVError" targetRef="EndEvent_Error" />
+    <bpmn:sequenceFlow id="Flow_N3" sourceRef="Task_LoadCSVData" targetRef="Task_ValidateRelations" />
+    <bpmn:sequenceFlow id="Flow_N4" sourceRef="Task_ValidateRelations" targetRef="Task_CreateSellerProfiles" />
+    <bpmn:sequenceFlow id="Flow_N5" sourceRef="Task_CreateSellerProfiles" targetRef="Task_CreatePurchaseHistories" />
+    <bpmn:sequenceFlow id="Flow_N6" sourceRef="Task_CreatePurchaseHistories" targetRef="Task_CreateBankTransactions" />
+    <bpmn:sequenceFlow id="Flow_N7" sourceRef="Task_CreateBankTransactions" targetRef="Task_CreateCustomerBehavior" />
+    <bpmn:sequenceFlow id="Flow_N8" sourceRef="Task_CreateCustomerBehavior" targetRef="Task_SaveJSON" />
+    <bpmn:sequenceFlow id="Flow_N9" sourceRef="Task_SaveJSON" targetRef="Task_GenerateNoSQLStats" />
+    <bpmn:sequenceFlow id="Flow_N10" sourceRef="Task_GenerateNoSQLStats" targetRef="Task_DisplayNoSQLSummary" />
+    <bpmn:sequenceFlow id="Flow_N11" sourceRef="Task_DisplayNoSQLSummary" targetRef="EndEvent_NoSQL" />
+  </bpmn:process>
+  
+  <bpmndi:BPMNDiagram id="BPMNDiagram_3">
+    <bpmndi:BPMNPlane id="BPMNPlane_3" bpmnElement="Process_NoSQLGeneration">
+      <bpmndi:BPMNShape id="StartEvent_NoSQL_di" bpmnElement="StartEvent_NoSQL">
+        <dc:Bounds x="152" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_CheckCSVFiles_di" bpmnElement="Task_CheckCSVFiles">
+        <dc:Bounds x="240" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_CSVExists_di" bpmnElement="Gateway_CSVExists" isMarkerVisible="true">
+        <dc:Bounds x="390" y="95" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ShowCSVError_di" bpmnElement="Task_ShowCSVError">
+        <dc:Bounds x="365" y="200" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_Error_di" bpmnElement="EndEvent_Error">
+        <dc:Bounds x="397" y="322" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_LoadCSVData_di" bpmnElement="Task_LoadCSVData">
+        <dc:Bounds x="490" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ValidateRelations_di" bpmnElement="Task_ValidateRelations">
+        <dc:Bounds x="640" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_CreateSellerProfiles_di" bpmnElement="Task_CreateSellerProfiles">
+        <dc:Bounds x="790" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_CreatePurchaseHistories_di" bpmnElement="Task_CreatePurchaseHistories">
+        <dc:Bounds x="940" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_CreateBankTransactions_di" bpmnElement="Task_CreateBankTransactions">
+        <dc:Bounds x="1090" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_CreateCustomerBehavior_di" bpmnElement="Task_CreateCustomerBehavior">
+        <dc:Bounds x="640" y="220" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SaveJSON_di" bpmnElement="Task_SaveJSON">
+        <dc:Bounds x="790" y="220" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_GenerateNoSQLStats_di" bpmnElement="Task_GenerateNoSQLStats">
+        <dc:Bounds x="940" y="220" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_DisplayNoSQLSummary_di" bpmnElement="Task_DisplayNoSQLSummary">
+        <dc:Bounds x="1090" y="220" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_NoSQL_di" bpmnElement="EndEvent_NoSQL">
+        <dc:Bounds x="1240" y="242" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      
+      <bpmndi:BPMNEdge id="Flow_N1_di" bpmnElement="Flow_N1">
+        <di:waypoint x="188" y="120" />
+        <di:waypoint x="240" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_N2_di" bpmnElement="Flow_N2">
+        <di:waypoint x="340" y="120" />
+        <di:waypoint x="390" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_CSVExists_di" bpmnElement="Flow_CSVExists">
+        <di:waypoint x="440" y="120" />
+        <di:waypoint x="490" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_CSVMissing_di" bpmnElement="Flow_CSVMissing">
+        <di:waypoint x="415" y="145" />
+        <di:waypoint x="415" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ToEnd_Error_di" bpmnElement="Flow_ToEnd_Error">
+        <di:waypoint x="415" y="280" />
+        <di:waypoint x="415" y="322" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_N3_di" bpmnElement="Flow_N3">
+        <di:waypoint x="590" y="120" />
+        <di:waypoint x="640" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_N4_di" bpmnElement="Flow_N4">
+        <di:waypoint x="740" y="120" />
+        <di:waypoint x="790" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_N5_di" bpmnElement="Flow_N5">
+        <di:waypoint x="890" y="120" />
+        <di:waypoint x="940" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_N6_di" bpmnElement="Flow_N6">
+        <di:waypoint x="1040" y="120" />
+        <di:waypoint x="1090" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_N7_di" bpmnElement="Flow_N7">
+        <di:waypoint x="1140" y="160" />
+        <di:waypoint x="1140" y="190" />
+        <di:waypoint x="690" y="190" />
+        <di:waypoint x="690" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_N8_di" bpmnElement="Flow_N8">
+        <di:waypoint x="740" y="260" />
+        <di:waypoint x="790" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_N9_di" bpmnElement="Flow_N9">
+        <di:waypoint x="890" y="260" />
+        <di:waypoint x="940" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_N10_di" bpmnElement="Flow_N10">
+        <di:waypoint x="1040" y="260" />
+        <di:waypoint x="1090" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_N11_di" bpmnElement="Flow_N11">
+        <di:waypoint x="1190" y="260" />
+        <di:waypoint x="1240" y="260" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

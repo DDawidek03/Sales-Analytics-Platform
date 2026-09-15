@@ -1,0 +1,5 @@
+# Ignore HTML, CSS, and JS from GitHub repository language statistics
+# This ensures Python and SQL are properly highlighted as primary languages for Data Analytics
+*.html linguist-detectable=false
+*.css linguist-detectable=false
+*.js linguist-detectable=false
